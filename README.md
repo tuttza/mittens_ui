@@ -1,7 +1,7 @@
 # MittensUi
 
-This a small GUI toolkit inspired by Ruby Shoes and built on top of the GTK ruby libraries. This isn't meant to be a wrapper 
-around GTK (but kind of is right now in its early stages). The goal of this project is make creating GUIs in Ruby dead simple 
+This is a small GUI toolkit inspired by Ruby Shoes and built on top of the GTK Ruby libraries. This isn't meant to be a wrapper 
+around GTK (but kind of is right now in its early stage). The goal of this project is make creating GUIs in Ruby dead simple 
 without the UI framework/library getting your way.
 
 ## Installation
