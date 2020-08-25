@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     mittens_ui (0.1.0)
+      gtk3
 
 GEM
   remote: https://rubygems.org/
@@ -57,7 +58,7 @@ GEM
     rspec-support (3.9.3)
 
 PLATFORMS
-  x64-mingw32
+  ruby
 
 DEPENDENCIES
   gtk3
@@ -67,4 +68,4 @@ DEPENDENCIES
   rspec (~> 3.0)
 
 BUNDLED WITH
-   2.1.4
+   1.17.3
