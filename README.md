@@ -26,29 +26,21 @@ Or install it yourself as:
 require "mittens_ui"
 
 app_options = {
-    title: "Mittens App Window Test!",
-    height: 400,
-    width: 350,
-    can_resize: true
+  title: "Say Hello!",
+  height: 400,
+  width: 350,
+  can_resize: true
 }.freeze
 
 MittensUi::Application.Window(app_options) do |window| 
   MittensUi::Box(window) do |box|
-    label_opts = {
-      layout: { box: box } 
-    }
+    label_opts = { layout: { box: box }, top: 30 }
     MittensUi::Label("Enter Name:", label_opts)
-  
-    textbox_options = {
-      can_edit: true,
-      layout: { box: box } 
-    }
+
+    textbox_options = { can_edit: true, layout: { box: box } }
     text_box = MittensUi::Textbox(textbox_options)
 
-    btn1_options ={
-      title: "Click Here",
-      layout: { box: box } 
-    }
+    btn1_options ={ title: "Click Here", layout: { box: box } }
     MittensUi::Button(btn1_options) do
       MittensUi::Alert(window, "Hello #{text_box.text}!")
     end
