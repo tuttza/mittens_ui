@@ -9,7 +9,6 @@ module MittensUi
         end
 
         def attach(widget, options)
-          puts options.inspect
           box_ref = options[:box]
 
           expand  = options.dig(:expand).nil?   ? true : options.dig(:expand)
