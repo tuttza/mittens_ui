@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mittens_ui (0.1.0)
+    mittens_ui (0.0.1)
       gtk3
 
 GEM

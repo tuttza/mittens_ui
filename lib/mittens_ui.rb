@@ -44,17 +44,17 @@ module MittensUi
   end
 
   def self.Grid(window, &block) 
-    raise "A Grid must be passed a block." unless block_given?
+    raise Error.new("A Grid must be passed a block.") unless block_given?
     MittensUi::Layouts::Grid.init(window, block = Proc.new)
   end
 
   def self.Stack(window, &block)
-    raise "A Stack must be passed a block." unless block_given?
+    raise Error.new("A Stack must be passed a block.") unless block_given?
     MittensUi::Layouts::Stack.init(window, block = Proc.new)
   end
 
   def self.Button(options, &block)
-    raise "Button must be passed a block." unless block_given?
+    raise Error.new("Button must be passed a block.") unless block_given?
     MittensUi::Widgets::Button.init(options, block = Proc.new)
   end
 
@@ -78,6 +78,7 @@ module MittensUi
         @@GTK_WINDOW.set_size_request(width, height)
         @@GTK_WINDOW.set_title(title)
         @@GTK_WINDOW.set_resizable(can_resize)
+        @@GTK_WINDOW.set_window_position(:center_always)
 
         @@GTK_WINDOW.signal_connect("delete-event") { |_widget| Gtk.main_quit }
       end
