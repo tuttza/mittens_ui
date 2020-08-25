@@ -1,8 +1,8 @@
 # MittensUi
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/mittens_ui`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This a small GUI toolkit inspired by Ruby Shoes and built on top of the GTK ruby libraries. This isn't meant to be a wrapper 
+around GTK (but kind of is right now in its early stages). The goal of this project is make creating GUIs in Ruby dead simple 
+without the UI framework/library getting your way.
 
 ## Installation
 
@@ -22,7 +22,39 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+require "mittens_ui"
+
+app_options = {
+    title: "Mittens App Window Test!",
+    height: 400,
+    width: 350,
+    can_resize: true
+}.freeze
+
+MittensUi::Application.Window(app_options) do |window| 
+  MittensUi::Box(window) do |box|
+    label_opts = {
+      layout: { box: box } 
+    }
+    MittensUi::Label("Enter Name:", label_opts)
+  
+    textbox_options = {
+      can_edit: true,
+      layout: { box: box } 
+    }
+    text_box = MittensUi::Textbox(textbox_options)
+
+    btn1_options ={
+      title: "Click Here",
+      layout: { box: box } 
+    }
+    MittensUi::Button(btn1_options) do
+      MittensUi::Alert(window, "Hello #{text_box.text}!")
+    end
+  end
+end
+```
 
 ## Development
 
@@ -32,9 +64,4 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/mittens_ui. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/mittens_ui/blob/master/CODE_OF_CONDUCT.md).
-
-
-## Code of Conduct
-
-Everyone interacting in the MittensUi project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/mittens_ui/blob/master/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/tuttza/mittens_ui. This project is intended to be a safe, welcoming space for collaboration).
