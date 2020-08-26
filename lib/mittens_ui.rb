@@ -66,16 +66,17 @@ module MittensUi
   
       private 
       def init_gtk_application(options, block)
-        app_name = options.dig(:name).nil? ? "mittens_ui_app" : options.dig(:name)
-        Process.setproctitle(app_name)
-        gtk_app_name = "org.gtk.mittens_ui.#{app_name}"
-
-        app = Gtk::Application.new(gtk_app_name, :flags_none)
-
+        app_name    = options.dig(:name).nil? ? "mittens_ui_app" : options.dig(:name)
         height      = options[:height].nil? ? 600 : options[:height]
         width       = options[:width].nil? ? 400 : options[:width]
         title       = options[:title].nil? ? "Mittens App" : options[:title]
         can_resize  = options[:can_resize].nil? ? true : options[:can_resize]
+
+        Process.setproctitle(app_name)
+
+        gtk_app_name = "org.gtk.mittens_ui.#{app_name}"
+        
+        app = Gtk::Application.new(gtk_app_name, :flags_none)
 
         app.signal_connect("activate") do |application|
           window = Gtk::ApplicationWindow.new(application)
