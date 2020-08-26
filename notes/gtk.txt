@@ -1,0 +1,3 @@
+
+GTK/GNOME application ids:
+  https://wiki.gnome.org/HowDoI/ChooseApplicationID
