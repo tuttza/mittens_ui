@@ -60,29 +60,35 @@ module MittensUi
 
   class Application
     class << self
-      def Window(options = {}, &block)  
-        init_gtk_toplevel_window(options, &block)
-        block.call(@@GTK_WINDOW)
-        @@GTK_WINDOW.show_all
-        Gtk.main
+      def Window(options = {}, block = Proc.new)  
+        init_gtk_application(options, block)
       end
   
-      def init_gtk_toplevel_window(options)
-        @@GTK_WINDOW = Gtk::Window.new(:toplevel)
-  
+      private 
+      def init_gtk_application(options, block)
+        app_name = options.dig(:name).nil? ? "mittens_ui_app" : options.dig(:name)
+        Process.setproctitle(app_name)
+        gtk_app_name = "org.gtk.mittens_ui.#{app_name}"
+
+        app = Gtk::Application.new(gtk_app_name, :flags_none)
+
         height      = options[:height].nil? ? 600 : options[:height]
         width       = options[:width].nil? ? 400 : options[:width]
         title       = options[:title].nil? ? "Mittens App" : options[:title]
         can_resize  = options[:can_resize].nil? ? true : options[:can_resize]
-        
-        @@GTK_WINDOW.set_size_request(width, height)
-        @@GTK_WINDOW.set_title(title)
-        @@GTK_WINDOW.set_resizable(can_resize)
-        @@GTK_WINDOW.set_window_position(:center_always)
 
-        @@GTK_WINDOW.signal_connect("delete-event") { |_widget| Gtk.main_quit }
+        app.signal_connect("activate") do |application|
+          window = Gtk::ApplicationWindow.new(application)
+          block.call(window)
+          window.set_size_request(width, height)
+          window.set_title(title)
+          window.set_resizable(can_resize)
+          window.set_window_position(:center_always)
+          window.show_all
+        end
+
+        app.run
       end
-      
     end
   end
 end

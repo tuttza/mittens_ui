@@ -15,6 +15,7 @@ module MittensUi
           alert_dialog.set_default_width(420)
           alert_dialog.set_default_height(200)
           alert_dialog.set_modal(true)
+          alert_dialog.set_resizable(false)
 
           message_label = Gtk::Label.new(message)
           message_label.set_margin_top(65)
