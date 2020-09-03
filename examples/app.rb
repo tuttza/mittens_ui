@@ -16,9 +16,20 @@ MittensUi::Application.Window(app_options) do |window|
     textbox_options = { can_edit: true, layout: { box: box } }
     text_box = MittensUi::Textbox(textbox_options)
 
+    listbox_options = {
+      layout: { box: box},
+      top: 10,
+      items: ["item_1", "item_2", "item_3"]
+    }.freeze
+    listbox = MittensUi::ListBox(listbox_options)
+
+    puts "listbox type: #{listbox.class}"
+    puts listbox.inspect
+    puts listbox.methods
+
     btn1_options ={ title: "Click Here", layout: { box: box, position: :end } }
     MittensUi::Button(btn1_options) do
-      MittensUi::Alert(window, "Hello #{text_box.text}!")
+      MittensUi::Alert(window, "Hello #{text_box.text}! | #{listbox.get_selected_value}")
     end
   end
 end

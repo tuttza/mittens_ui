@@ -8,17 +8,22 @@ require "mittens_ui/widgets/alert"
 require "mittens_ui/widgets/label"
 require "mittens_ui/widgets/button"
 require "mittens_ui/widgets/textbox"
+require "mittens_ui/widgets/listbox"
 
 require "gtk3"
 
 module MittensUi
   class Error < StandardError; end
 
-  def self.Alert(window, message, options={})
+  def self.ListBox(options = {})
+    MittensUi::Widgets::ListBox.init(options)    
+  end
+
+  def self.Alert(window, message, options = {})
     MittensUi::Widgets::Alert.init(window, message, options)
   end
 
-  def self.Label(text, options)
+  def self.Label(text, options = {})
     MittensUi::Widgets::Label.init(text, options)
   end
 
@@ -66,7 +71,7 @@ module MittensUi
   
       private 
       def set_process_name(name)
-        # Doesn't work in MacOS Activity Monitor still 
+        # Doesn't work in MacOS Activity Monitor or Windows Task Manager.
         # shows up as "Ruby".
         Process.setproctitle(name)
         $PROGRAM_NAME = name
