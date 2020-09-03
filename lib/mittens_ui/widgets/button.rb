@@ -2,7 +2,7 @@ module MittensUi
   module Widgets
     class Button
       class << self
-        def init(options, block = Proc.new)
+        def init(options, &block)
           button_title  = options[:title] || "MittensUi Button"
           layout        = options[:layout]
           window        = options[:window]

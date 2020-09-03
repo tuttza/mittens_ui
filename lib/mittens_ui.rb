@@ -40,27 +40,27 @@ module MittensUi
 
   def self.Box(window, &block)
     raise Error.new("A MittensUi::Box must be passed a block.") unless block_given?
-    MittensUi::Layouts::Box.init(window, block = Proc.new)
+    MittensUi::Layouts::Box.init(window, &block)
   end
 
   def self.Grid(window, &block) 
     raise Error.new("A Grid must be passed a block.") unless block_given?
-    MittensUi::Layouts::Grid.init(window, block = Proc.new)
+    MittensUi::Layouts::Grid.init(window, &block)
   end
 
   def self.Stack(window, &block)
     raise Error.new("A Stack must be passed a block.") unless block_given?
-    MittensUi::Layouts::Stack.init(window, block = Proc.new)
+    MittensUi::Layouts::Stack.init(window, &block)
   end
 
   def self.Button(options, &block)
     raise Error.new("Button must be passed a block.") unless block_given?
-    MittensUi::Widgets::Button.init(options, block = Proc.new)
+    MittensUi::Widgets::Button.init(options, &block)
   end
 
   class Application
     class << self
-      def Window(options = {}, block = Proc.new)  
+      def Window(options = {}, &block)  
         init_gtk_application(options, block)
       end
   

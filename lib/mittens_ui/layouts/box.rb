@@ -2,7 +2,7 @@ module MittensUi
   module Layouts
     class Box
       class << self
-        def init(window, block = Proc.new)
+        def init(window, &block)
           box = Gtk::Box.new(:vertical, 6)
           block.call(box)
           window.add(box)

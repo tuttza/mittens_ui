@@ -15,7 +15,7 @@ module MittensUi
           grid_top      = options[:top]
           grid_left     = options[:left]
 
-          if !grid.nil?
+          unless grid.nil?
             grid.attach(widget, grid_left, grid_top, grid_width, grid_height)
           else
             raise "You much pass a MittensUI:Grid or pass the Main app Window via the options hash."

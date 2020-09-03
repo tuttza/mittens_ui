@@ -2,7 +2,7 @@ module MittensUi
   module Layouts
     class Stack
       class << self
-        def init(window, block = Proc.new)
+        def init(window, &block)
           stack = Gtk::Stack.new
           block.call(stack)
           window.add_child(stack)
