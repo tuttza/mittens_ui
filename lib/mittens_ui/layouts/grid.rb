@@ -1,27 +1,30 @@
 module MittensUi
   module Layouts
     class Grid
-      class << self
-        def init(window, block = Proc.new)
-          grid = Gtk::Grid.new
-          block.call grid
-          window.add_child(grid)
+      def initialize(window, &block)
+        @grid = Gtk::Grid.new
+        yield(self)
+        window.add_child(@grid)
+      end
+
+      def attach(widget, options)
+        grid_height   = options[:height]
+        grid_width    = options[:width]
+        grid_top      = options[:top]
+        grid_left     = options[:left]
+
+        # Place widget next to each other in the direction determined by the “orientation” property
+        # defaults to :horizontal.
+        if options.size >= 1
+          @grid.add(widget)
         end
 
-        def attach(widget, options)
-          grid          = options[:grid]
-          grid_height   = options[:height]
-          grid_width    = options[:width]
-          grid_top      = options[:top]
-          grid_left     = options[:left]
-
-          unless grid.nil?
-            grid.attach(widget, grid_left, grid_top, grid_width, grid_height)
-          else
-            raise "You much pass a MittensUI:Grid or pass the Main app Window via the options hash."
-          end
+        unless options[:attach_to].nil?
+          return
+          @grid.attach_next_to()
+        else
+          @grid.attach(widget, grid_left, grid_top, grid_width, grid_height)
         end
-
       end
     end
   end
