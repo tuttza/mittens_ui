@@ -14,8 +14,8 @@ require "gtk3"
 module MittensUi
   class Error < StandardError; end
 
-  def self.ListBox(options = {})
-    list_box = MittensUi::Widgets::ListBox.new(options)
+  def self.ListBox(layout, options = {})
+    list_box = MittensUi::Widgets::ListBox.new(layout, options)
     Application.set_visible_elements(list_box)
     return list_box
   end
@@ -26,47 +26,21 @@ module MittensUi
     return alert
   end
 
-  def self.Label(text, options = {})
-    label = MittensUi::Widgets::Label.new(text, options)
+  def self.Label(text, layout, options = {})
+    label = MittensUi::Widgets::Label.new(text, layout, options)
     Application.set_visible_elements(label)
     return label
   end
 
-  def self.Textbox(options, &block)
-    textbox = nil
-    
-    unless block_given?
-      textbox = MittensUi::Widgets::Textbox.new(options, nil)
-    else
-      textbox = MittensUi::Widgets::Textbox.new(options, &block)
-    end
-
+  def self.Textbox(layout, options = {})
+    textbox = MittensUi::Widgets::Textbox.new(layout, options)
     Application.set_visible_elements(textbox)
-
-    if block_given?
-      block.call textbox
-    else
-      return textbox
-    end 
+    return textbox
   end
 
-  def self.Box(window, options={}, &block)
-    raise Error.new("A MittensUi::Box must be passed a block.") unless block_given?
-    box = MittensUi::Layouts::Box.new(window, options, &block)
-    Application.set_visible_elements(box)
-    return box
-  end
-
-  def self.Grid(window, &block) 
-    raise Error.new("A Grid must be passed a block.") unless block_given?
-    grid = MittensUi::Layouts::Grid.new(window, &block)
-    Application.set_visible_elements(grid)
-    return grid
-  end
-
-  def self.Button(options, &block)
+  def self.Button(layout, options = {}, &block)
     raise Error.new("Button must be passed a block.") unless block_given?
-    button = MittensUi::Widgets::Button.new(options, &block)
+    button = MittensUi::Widgets::Button.new(layout, options, &block)
     Application.set_visible_elements(button)
     return button
   end
@@ -117,12 +91,16 @@ module MittensUi
         app = Gtk::Application.new(gtk_app_name, :flags_none)
 
         app.signal_connect("activate") do |application|
-          window = Gtk::ApplicationWindow.new(application)
-          block.call(window)
-          window.set_size_request(width, height)
-          window.set_title(title)
-          window.set_resizable(can_resize)
-          window.show_all
+          app_window = Gtk::ApplicationWindow.new(application)
+          scrolled_window = Gtk::ScrolledWindow.new
+          vertical_box = Gtk::Box.new(:vertical, 10)
+          scrolled_window.add(vertical_box)
+          app_window.add(scrolled_window)
+          block.call(app_window, vertical_box)
+          app_window.set_size_request(width, height)
+          app_window.set_title(title)
+          app_window.set_resizable(can_resize)
+          app_window.show_all
         end
 
         app.run
@@ -131,14 +109,21 @@ module MittensUi
   end
 
   class Job
-    attr_reader :name
+    attr_reader :name, :status
 
     def initialize(name)
       @name = name
+      @status = nil
     end
 
     def run(&block)
-      Thread.new { |_t| yield }
+      job_t = Thread.new { |_t| yield }
+      set_status(job_t)
+    end
+
+    private 
+    def set_status(thread)
+      @status = thread.status
     end
   end
 end

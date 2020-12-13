@@ -1,7 +1,7 @@
 # MittensUi
 
-This is a small GUI toolkit inspired by Ruby Shoes and built on top of the GTK Ruby libraries. This isn't meant to be a wrapper 
-around GTK (but kind of is right now in its early stage). The goal of this project is make creating GUIs in Ruby dead simple 
+This is a small vertical stacking GUI toolkit inspired by Ruby Shoes and built on top of the GTK Ruby library. This isn't meant to be a full wrapper 
+around GTK. The goal of this project is make creating GUIs in Ruby dead simple 
 without the UI framework/library getting your way.
 
 ## Installation
@@ -26,24 +26,29 @@ Or install it yourself as:
 require "mittens_ui"
 
 app_options = {
+  name: "say_hello",
   title: "Say Hello!",
-  height: 400,
+  height: 450,
   width: 350,
   can_resize: true
 }.freeze
 
-MittensUi::Application.Window(app_options) do |window| 
-  MittensUi::Box(window) do |box|
-    label_opts = { layout: { box: box }, top: 30 }
-    MittensUi::Label("Enter Name:", label_opts)
+MittensUi::Application.Window(app_options) do |window, layout|
+  label_opts = { top: 30 }
+  MittensUi::Label("Enter Name:", layout, label_opts)
 
-    textbox_options = { can_edit: true, layout: { box: box } }
-    text_box = MittensUi::Textbox(textbox_options)
+  textbox_options = { can_edit: true }
+  text_box = MittensUi::Textbox(layout, textbox_options)
 
-    btn1_options ={ title: "Click Here", layout: { box: box } }
-    MittensUi::Button(btn1_options) do
-      MittensUi::Alert(window, "Hello #{text_box.text}!")
-    end
+  listbox_options = {
+    top: 10,
+    items: ["item_1", "item_2", "item_3"]
+  }.freeze
+  listbox = MittensUi::ListBox(layout, listbox_options)
+
+  btn1_options = { title: "Click Here" }
+  MittensUi::Button(btn1_options, layout) do
+    MittensUi::Alert(window, "Hello #{text_box.text}!")
   end
 end
 ```

@@ -1,44 +1,30 @@
 module MittensUi
   module Widgets
     class Button
-      def initialize(options, &block)
+      def initialize(layout, options, &block)
         button_title  = options[:title] || "Button"
-        layout        = options[:layout]
-        window        = options[:window]
-    
-        margin_top    = layout[:top].nil?    ? nil : layout[:top]
-        margin_bottom = layout[:bottom].nil? ? nil : layout[:bottom]
-        margin_right  = layout[:right].nil?  ? nil : layout[:right]
-        margin_left   = layout[:left].nil?   ? nil : layout[:left]
+
+        margin_top    = options[:top].nil?    ? nil : options[:top]
+        margin_bottom = options[:bottom].nil? ? nil : options[:bottom]
+        margin_right  = options[:right].nil?  ? nil : options[:right]
+        margin_left   = options[:left].nil?   ? nil : options[:left]
 
         @button = Gtk::Button.new(label: button_title)
+ 
+        @button.set_margin_top(margin_top) unless margin_top.nil?
 
-        unless margin_top.nil?
-          @button.set_margin_top(margin_top)
-        end
+        @button.set_margin_left(margin_left) unless margin_left.nil?
 
-        unless margin_left.nil?
-          @button.set_margin_left(margin_left)
-        end
+        @button.set_margin_right(margin_right) unless margin_right.nil?
 
-        unless margin_right.nil?
-          @button.set_margin_right(margin_right)
-        end
+        @button.set_margin_bottom(margin_bottom) unless margin_bottom.nil?
 
-        unless margin_bottom.nil?
-          @button.set_margin_bottom(margin_bottom)
-        end
-        
-        if layout[:grid]
-          layout[:grid].attach(@button, layout)
-        elsif layout[:box]
-          layout[:box].attach(@button, layout)
-        elsif window
-          window.add_child(@button)
+        if layout
+          layout.pack_start(@button)
         end
             
-        @button.signal_connect "clicked" do |widget|
-          block.call
+        @button.signal_connect "clicked" do |button_widget|
+          block.call(button_widget)
         end
       end
       

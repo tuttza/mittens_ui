@@ -3,9 +3,7 @@ module MittensUi
     class ListBox      
       attr_reader :items
 
-      def initialize(options={})
-        layout  = options[:layout]
-        window  = options[:window]
+      def initialize(layout, options={})
         @items  = options[:items]
 
         list_store = Gtk::ListStore.new(String)
@@ -26,12 +24,8 @@ module MittensUi
 
         @gtk_combobox.set_active(0)
 
-        if layout[:grid]
-          layout[:grid].attach(@gtk_combobox, layout)
-        elsif layout[:box]
-          layout[:box].attach(@gtk_combobox, layout)
-        elsif window
-          window.add_child(@gtk_combobox)
+        if layout
+          layout.pack_start(@gtk_combobox)
         end
 
         return self

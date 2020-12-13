@@ -1,14 +1,11 @@
 module MittensUi
   module Widgets
     class Label
-      def initialize(text, options)
-        layout = options[:layout]
-        window = options[:window]
-
-        margin_top    = layout[:top].nil?       ? nil : layout[:top]
-        margin_bottom = layout[:bottom].nil?    ? nil : layout[:bottom]
-        margin_right  = layout[:right].nil?     ? nil : layout[:right]
-        margin_left   = layout[:left].nil?      ? nil : layout[:left]
+      def initialize(text, layout, options)
+        margin_top    = options[:top].nil?     ? nil : options[:top]
+        margin_bottom = options[:bottom].nil?  ? nil : options[:bottom]
+        margin_right  = options[:right].nil?   ? nil : options[:right]
+        margin_left   = options[:left].nil?    ? nil : options[:left]
 
         @label = Gtk::Label.new(text)
 
@@ -27,15 +24,12 @@ module MittensUi
         unless margin_right.nil?
           @label.set_margin_right(margin_right)
         end
-        
-        if layout[:grid]
-          layout[:grid].attach(@label, layout)
-        elsif layout[:box]
-          layout[:box].attach(@label, layout)
-        elsif window
-          window.add_child(@label)
-        end 
+
+        if layout
+          layout.pack_start(@label)
+        end
       end
+
       def remove
         return if @label.nil?
         @label.destroy
