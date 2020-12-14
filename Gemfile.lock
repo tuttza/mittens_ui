@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mittens_ui (0.0.1)
+    mittens_ui (0.0.2)
       gtk3
 
 GEM
@@ -39,23 +39,23 @@ GEM
     pango (3.4.3)
       cairo-gobject (= 3.4.3)
       gobject-introspection (= 3.4.3)
-    pkg-config (1.4.2)
+    pkg-config (1.4.4)
     rake (12.3.3)
     rake-compiler (1.1.1)
       rake
-    rspec (3.9.0)
-      rspec-core (~> 3.9.0)
-      rspec-expectations (~> 3.9.0)
-      rspec-mocks (~> 3.9.0)
-    rspec-core (3.9.2)
-      rspec-support (~> 3.9.3)
-    rspec-expectations (3.9.2)
+    rspec (3.10.0)
+      rspec-core (~> 3.10.0)
+      rspec-expectations (~> 3.10.0)
+      rspec-mocks (~> 3.10.0)
+    rspec-core (3.10.0)
+      rspec-support (~> 3.10.0)
+    rspec-expectations (3.10.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.9.0)
-    rspec-mocks (3.9.1)
+      rspec-support (~> 3.10.0)
+    rspec-mocks (3.10.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.9.0)
-    rspec-support (3.9.3)
+      rspec-support (~> 3.10.0)
+    rspec-support (3.10.0)
 
 PLATFORMS
   ruby
