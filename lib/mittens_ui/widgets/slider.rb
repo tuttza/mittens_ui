@@ -8,7 +8,6 @@ module MittensUi
         init_value  = options[:initial_value].nil?  ? 1.0  : options[:initial_value]
 
         @scale = Gtk::Scale.new(:horizontal, start_value, stop_value, step_value)
-        puts @scale.methods
         @scale.digits = 0
         @scale.draw_value = true
         @scale.value = init_value
