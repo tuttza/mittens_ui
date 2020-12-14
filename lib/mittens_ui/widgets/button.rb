@@ -11,13 +11,10 @@ module MittensUi
 
         @button = Gtk::Button.new(label: button_title)
  
-        @button.set_margin_top(margin_top) unless margin_top.nil?
-
-        @button.set_margin_left(margin_left) unless margin_left.nil?
-
-        @button.set_margin_right(margin_right) unless margin_right.nil?
-
-        @button.set_margin_bottom(margin_bottom) unless margin_bottom.nil?
+        @button.set_margin_top(margin_top)        unless margin_top.nil?
+        @button.set_margin_left(margin_left)      unless margin_left.nil?
+        @button.set_margin_right(margin_right)    unless margin_right.nil?
+        @button.set_margin_bottom(margin_bottom)  unless margin_bottom.nil?
 
         if layout
           layout.pack_start(@button)
