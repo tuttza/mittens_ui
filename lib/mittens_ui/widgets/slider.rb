@@ -2,7 +2,6 @@ module MittensUi
   module Widgets
     class Slider
       def initialize(layout, options={}, &block)
-        puts "OPS: #{options.inspect}"
         start_value = options[:start_value].nil?   ? 1.0  : options[:start_value]
         stop_value  = options[:stop_value].nil?    ? 10.0 : options[:stop_value]
         step_value  = options[:step_value].nil?    ? 1.0  : options[:step_value]
