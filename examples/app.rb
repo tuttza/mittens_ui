@@ -25,4 +25,9 @@ MittensUi::Application.Window(app_options) do |window, layout|
   MittensUi::Button(layout, btn1_options) do
     MittensUi::Alert(window, "Hello #{text_box.text}!")
   end
+
+  slider_opts = { start_value: 1, stop_value: 100 }
+  MittensUi::Slider(layout, slider_opts) do |s|
+    puts "value changed: #{s.value}"
+  end
 end

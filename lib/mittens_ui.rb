@@ -1,18 +1,22 @@
 require "mittens_ui/version"
-
-require "mittens_ui/layouts/grid"
-require "mittens_ui/layouts/box"
-
 require "mittens_ui/widgets/alert"
 require "mittens_ui/widgets/label"
 require "mittens_ui/widgets/button"
 require "mittens_ui/widgets/textbox"
 require "mittens_ui/widgets/listbox"
+require "mittens_ui/widgets/slider"
 
 require "gtk3"
 
 module MittensUi
   class Error < StandardError; end
+
+  def self.Slider(layout, options = {}, &block)
+    raise Error.new("Slider must be passed a block.") unless block_given?
+    slider = MittensUi::Widgets::Slider.new(layout, options, &block)
+    Application.set_visible_elements(slider)
+    return slider
+  end
 
   def self.ListBox(layout, options = {})
     list_box = MittensUi::Widgets::ListBox.new(layout, options)
