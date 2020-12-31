@@ -23,7 +23,7 @@ Or install it yourself as:
 ## Usage
 
 ```ruby
-require 'mittens_ui'
+require '../lib/mittens_ui'
 
 app_options = {
   name: "say_hello",
@@ -50,6 +50,10 @@ MittensUi::Application.Window(app_options) do
 
   s = MittensUi::Slider({ start_value: 1, stop_value: 100, initial_value: 30 })
   s.slide { |s| puts s.value }
+
+  switch = MittensUi::Switch(left: 120 )
+  switch.on { puts switch.status }
+end
 end
 ```
 
