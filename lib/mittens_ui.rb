@@ -5,12 +5,17 @@ require "mittens_ui/widgets/button"
 require "mittens_ui/widgets/textbox"
 require "mittens_ui/widgets/listbox"
 require "mittens_ui/widgets/slider"
+require "mittens_ui/widgets/switch"
 
 require "gtk3"
 
 module MittensUi
 
   class Error < StandardError; end
+
+  def self.Switch(options = {})
+    MittensUi::Widgets::Switch.new(options)
+  end
 
   def self.Slider(options = {})
     MittensUi::Widgets::Slider.new(options)
