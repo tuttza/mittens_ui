@@ -5,7 +5,7 @@ module MittensUi
     class Core    
       include Helpers
 
-      # All MittenUi::Widget classes should inherit from this base class.
+      # All MittenUi::Widgets::* classes should inherit from this base class.
 
       def initialize(widget)
         @core_widget = widget
