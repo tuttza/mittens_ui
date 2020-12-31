@@ -27,7 +27,7 @@ module MittensUi
         end
 
         # We need a Grid within our global $vertical_box layout
-        # in order to make the Widget look good (mean not overly streched).
+        # in order to make the Widget look good (meaning not overly streched).
         grid = Gtk::Grid.new
         grid.set_column_spacing(1)
         grid.set_row_spacing(1)
