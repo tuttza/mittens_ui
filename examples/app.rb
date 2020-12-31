@@ -9,16 +9,15 @@ app_options = {
 }.freeze
 
 MittensUi::Application.Window(app_options) do
-  label_opts = { top: 30 }
-  MittensUi::Label("Enter Name:", label_opts)
+  MittensUi::Label("Enter Name:", top: 30)
 
-  textbox_options = { can_edit: true }
-  text_box = MittensUi::Textbox(textbox_options)
+  text_box = MittensUi::Textbox(can_edit: true)
 
   listbox_options = {
-    top: 10,
+    top: 10, 
     items: ["item_1", "item_2", "item_3"]
   }.freeze
+
   listbox = MittensUi::ListBox(listbox_options)
 
   btn = MittensUi::Button(title: "Click Here")
@@ -26,5 +25,4 @@ MittensUi::Application.Window(app_options) do
 
   s = MittensUi::Slider({ start_value: 1, stop_value: 100, initial_value: 30 })
   s.slide { |s| puts s.value }
-
 end
