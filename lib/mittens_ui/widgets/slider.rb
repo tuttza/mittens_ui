@@ -1,10 +1,10 @@
 module MittensUi
   module Widgets
     class Slider
-      def initialize(layout, options={}, &block)
-        start_value = options[:start_value].nil?   ? 1.0  : options[:start_value]
-        stop_value  = options[:stop_value].nil?    ? 10.0 : options[:stop_value]
-        step_value  = options[:step_value].nil?    ? 1.0  : options[:step_value]
+      def initialize(options={})
+        start_value = options[:start_value].nil?    ? 1.0  : options[:start_value]
+        stop_value  = options[:stop_value].nil?     ? 10.0 : options[:stop_value]
+        step_value  = options[:step_value].nil?     ? 1.0  : options[:step_value]
         init_value  = options[:initial_value].nil?  ? 1.0  : options[:initial_value]
 
         @scale = Gtk::Scale.new(:horizontal, start_value, stop_value, step_value)
@@ -12,14 +12,16 @@ module MittensUi
         @scale.draw_value = true
         @scale.value = init_value
 
-        @scale.signal_connect "value_changed" do |scale_widget|
-          block.call(scale_widget)
-        end
+        $vertical_box.pack_start(@scale)
+      end
 
-        if layout
-          layout.pack_start(@scale)
+      def move
+        @scale.signal_connect "value_changed" do |scale_widget|
+          yield(scale_widget)
         end
       end
+
+      alias :slide :move
 
       def remove
         return if @scale.nil?

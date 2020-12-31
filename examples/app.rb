@@ -8,26 +8,23 @@ app_options = {
   can_resize: true
 }.freeze
 
-MittensUi::Application.Window(app_options) do |window, layout|
+MittensUi::Application.Window(app_options) do
   label_opts = { top: 30 }
-  MittensUi::Label("Enter Name:", layout, label_opts)
+  MittensUi::Label("Enter Name:", label_opts)
 
   textbox_options = { can_edit: true }
-  text_box = MittensUi::Textbox(layout, textbox_options)
+  text_box = MittensUi::Textbox(textbox_options)
 
   listbox_options = {
     top: 10,
     items: ["item_1", "item_2", "item_3"]
   }.freeze
-  listbox = MittensUi::ListBox(layout, listbox_options)
+  listbox = MittensUi::ListBox(listbox_options)
 
-  btn1_options = { title: "Click Here" }
-  MittensUi::Button(layout, btn1_options) do
-    MittensUi::Alert(window, "Hello #{text_box.text}!")
-  end
+  btn = MittensUi::Button(title: "Click Here")
+  btn.click {|_b| MittensUi::Alert("Hello #{text_box.text} AND! #{listbox.selected_value} was selected.") }
 
-  slider_opts = { start_value: 1, stop_value: 100, initial_value: 30 }
-  MittensUi::Slider(layout, slider_opts) do |s|
-    puts "value changed: #{s.value}"
-  end
+  s = MittensUi::Slider({ start_value: 1, stop_value: 100, initial_value: 30 })
+  s.slide { |s| puts s.value }
+
 end

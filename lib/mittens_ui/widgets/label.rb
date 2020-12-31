@@ -1,7 +1,11 @@
 module MittensUi
   module Widgets
     class Label
-      def initialize(text, layout, options)
+      def initialize(text, options)
+        if text.nil? || text == "" || text == " "
+          text = "Label"
+        end
+
         margin_top    = options[:top].nil?     ? nil : options[:top]
         margin_bottom = options[:bottom].nil?  ? nil : options[:bottom]
         margin_right  = options[:right].nil?   ? nil : options[:right]
@@ -25,9 +29,7 @@ module MittensUi
           @label.set_margin_right(margin_right)
         end
 
-        if layout
-          layout.pack_start(@label)
-        end
+        $vertical_box.pack_start(@label)
       end
 
       def remove

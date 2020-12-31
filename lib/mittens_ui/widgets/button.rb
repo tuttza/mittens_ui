@@ -1,7 +1,7 @@
 module MittensUi
   module Widgets
     class Button
-      def initialize(layout, options, &block)
+      def initialize(options={})
         button_title  = options[:title] || "Button"
 
         margin_top    = options[:top].nil?    ? nil : options[:top]
@@ -16,12 +16,12 @@ module MittensUi
         @button.set_margin_right(margin_right)    unless margin_right.nil?
         @button.set_margin_bottom(margin_bottom)  unless margin_bottom.nil?
 
-        if layout
-          layout.pack_start(@button)
-        end
-            
+        $vertical_box.pack_start(@button)
+      end
+
+      def click
         @button.signal_connect "clicked" do |button_widget|
-          block.call(button_widget)
+          yield(button_widget)
         end
       end
       

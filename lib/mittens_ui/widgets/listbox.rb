@@ -3,8 +3,8 @@ module MittensUi
     class ListBox      
       attr_reader :items
 
-      def initialize(layout, options={})
-        @items  = options[:items]
+      def initialize(options={})
+        @items = options[:items]
 
         list_store = Gtk::ListStore.new(String)
 
@@ -24,11 +24,7 @@ module MittensUi
 
         @gtk_combobox.set_active(0)
 
-        if layout
-          layout.pack_start(@gtk_combobox)
-        end
-
-        return self
+        $vertical_box.pack_start(@gtk_combobox)
       end
 
       def set_selected_value(value)
@@ -38,6 +34,7 @@ module MittensUi
       def get_selected_value
         @selected_value
       end
+      alias :selected_value :get_selected_value
 
       def remove
         return if @gtk_combobox.nil?

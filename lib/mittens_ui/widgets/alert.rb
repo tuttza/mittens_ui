@@ -1,16 +1,16 @@
 module MittensUi
   module Widgets
     class Alert
-      def initialize(window, message, options)
+      def initialize(message, options)
         dialog_options = {
           title: "Alert",
-          parent: window,
+          parent: $app_window,
           flags: [:modal, :destroy_with_parent],
           :buttons => [["_OK", :none]]
         }.freeze
 
         alert_dialog = Gtk::Dialog.new(dialog_options)
-        alert_dialog.set_transient_for(window)
+        alert_dialog.set_transient_for($app_window)
         alert_dialog.set_default_width(420)
         alert_dialog.set_default_height(200)
         alert_dialog.set_modal(true)
