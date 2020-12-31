@@ -1,6 +1,8 @@
+require_relative "./core"
+
 module MittensUi
   module Widgets
-    class ListBox      
+    class ListBox < Core   
       attr_reader :items
 
       def initialize(options={})
@@ -25,21 +27,19 @@ module MittensUi
         @gtk_combobox.set_active(0)
 
         $vertical_box.pack_start(@gtk_combobox)
+
+        super(@gtk_combobox)
       end
 
       def set_selected_value(value)
         @selected_value = value
       end
+      alias :set_value :set_selected_value
 
       def get_selected_value
         @selected_value
       end
       alias :selected_value :get_selected_value
-
-      def remove
-        return if @gtk_combobox.nil?
-        @gtk_combobox.destroy
-      end
     end
   end
 end

@@ -1,6 +1,8 @@
+require_relative "./core"
+
 module MittensUi
   module Widgets
-    class Slider
+    class Slider < Core
       def initialize(options={})
         start_value = options[:start_value].nil?    ? 1.0  : options[:start_value]
         stop_value  = options[:stop_value].nil?     ? 10.0 : options[:stop_value]
@@ -13,6 +15,8 @@ module MittensUi
         @scale.value = init_value
 
         $vertical_box.pack_start(@scale)
+
+        super(@scale)
       end
 
       def move
@@ -22,11 +26,6 @@ module MittensUi
       end
 
       alias :slide :move
-
-      def remove
-        return if @scale.nil?
-        @scale.destroy
-      end
     end
   end
 end

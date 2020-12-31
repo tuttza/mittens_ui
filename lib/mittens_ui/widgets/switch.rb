@@ -1,30 +1,13 @@
+require_relative "./core"
+
 module MittensUi
   module Widgets
-    class Switch
+    class Switch < Core
       def initialize(options = {})
         @switch = Gtk::Switch.new
         @switch.set_active(false)
 
-        margin_top    = options[:top].nil?     ? nil : options[:top]
-        margin_bottom = options[:bottom].nil?  ? nil : options[:bottom]
-        margin_right  = options[:right].nil?   ? nil : options[:right]
-        margin_left   = options[:left].nil?    ? nil : options[:left]
-
-        unless margin_top.nil?
-          @switch.set_margin_top(margin_top)
-        end
-
-        unless margin_bottom.nil?
-          @switch.set_margin_bottom(margin_top)
-        end
-
-        unless margin_left.nil?
-          @switch.set_margin_left(margin_left)
-        end
-
-        unless margin_right.nil?
-          @switch.set_margin_right(margin_right)
-        end
+        set_margin_from_opts_for(@switch, options)
 
         # We need a Grid within our global $vertical_box layout
         # in order to make the Widget look good (meaning not overly streched).
@@ -34,6 +17,8 @@ module MittensUi
         grid.attach(@switch, 0, 0, 1, 1) 
         
         $vertical_box.pack_start(grid)
+
+        super(@switch)
       end
 
       def activate
@@ -46,11 +31,6 @@ module MittensUi
 
       def status
         @switch.active? ? 'on' : 'off'
-      end
-
-      def remove
-        return if @switch.nil?
-        @switch.destroy
       end
     end
   end

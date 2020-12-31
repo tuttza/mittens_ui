@@ -2,9 +2,9 @@ require '../lib/mittens_ui'
 
 app_options = {
   name: "say_hello",
-  title: "Say Hello!",
-  height: 450,
-  width: 350,
+  title: "The Say Hello App!",
+  height: 650,
+  width: 550,
   can_resize: true
 }.freeze
 
@@ -26,6 +26,30 @@ MittensUi::Application.Window(app_options) do
   s = MittensUi::Slider({ start_value: 1, stop_value: 100, initial_value: 30 })
   s.slide { |s| puts s.value }
 
+  img_opts = {
+    tooltip_text: "The Gnome LOGO!", 
+    width: 200, 
+    height: 200, 
+    left: 50
+  }.freeze
+
+  img = MittensUi::Image("./assets/gnome_logo.png", img_opts)
+
   switch = MittensUi::Switch(left: 120 )
-  switch.on { puts switch.status }
+
+  img.click do
+    unless switch.hidden?
+      switch.show
+    else
+      switch.hide
+    end
+  end
+
+  switch.on do
+    unless img.hidden?
+      img.show
+    else
+      img.hide
+    end
+  end
 end

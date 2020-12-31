@@ -6,12 +6,16 @@ require "mittens_ui/widgets/textbox"
 require "mittens_ui/widgets/listbox"
 require "mittens_ui/widgets/slider"
 require "mittens_ui/widgets/switch"
+require "mittens_ui/widgets/image"
 
 require "gtk3"
 
 module MittensUi
-
   class Error < StandardError; end
+
+  def self.Image(path, options={})
+    MittensUi::Widgets::Image.new(path, options)
+  end
 
   def self.Switch(options = {})
     MittensUi::Widgets::Switch.new(options)
@@ -39,10 +43,6 @@ module MittensUi
 
   def self.Button(options = {})
     MittensUi::Widgets::Button.new(options)
-  end
-
-  def self.RemoveWidget(widget)
-    widget.remove
   end
 
   class Application

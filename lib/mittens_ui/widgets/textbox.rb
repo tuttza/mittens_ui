@@ -1,6 +1,8 @@
+require_relative "./core"
+
 module MittensUi
   module Widgets
-    class Textbox
+    class Textbox < Core
       def initialize(options={}) 
         @textbox    = Gtk::Entry.new
         can_edit    = options[:can_edit].nil? ?  true : options[:can_edit]
@@ -10,15 +12,12 @@ module MittensUi
         @textbox.set_max_length(max_length) unless max_length.nil?
 
         $vertical_box.pack_start(@textbox)
+
+        super(@textbox)
       end
 
       def text
         @textbox.text
-      end
-
-      def remove
-        return if @textbox.nil?
-        @textbox.destroy
       end
     end
   end
