@@ -54,5 +54,6 @@ MittensUi::Application.Window(app_options) do
   end
 
   cb = MittensUi::CheckBox(label: "Enable")
-  cb.toggle { puts "checkbox was toggled!" }
+  cb.value = "Some Value"
+  cb.toggle { puts "checkbox was toggled! associated value: #{cb.value}" }
 end
