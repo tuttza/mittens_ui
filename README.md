@@ -87,9 +87,10 @@ Simply fork and clone this repo to your machine, cd into it and run `bundle inst
 This does require GTK ruby gem which requires `gtk` native dependencies to be complied and installed on your system.
 
 #### MacOS
-	Using Brew:
-		* `$ brew install gtk+3`
-		* `$ brew install cairo`
+
+Using Brew:
+* `$ brew install gtk+3`
+* `$ brew install cairo`
 
 ## Contributing
 
