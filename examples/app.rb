@@ -52,4 +52,7 @@ MittensUi::Application.Window(app_options) do
       img.hide
     end
   end
+
+  cb = MittensUi::CheckBox(label: "Enable")
+  cb.toggle { puts "checkbox was toggled!" }
 end

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mittens_ui (0.0.7)
+    mittens_ui (0.0.8)
       gtk3
 
 GEM
@@ -66,6 +66,9 @@ DEPENDENCIES
   rake (~> 12.0)
   rake-compiler
   rspec (~> 3.0)
+
+RUBY VERSION
+   ruby 3.0.0p0
 
 BUNDLED WITH
    2.2.3
