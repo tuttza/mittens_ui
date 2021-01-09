@@ -56,4 +56,6 @@ MittensUi::Application.Window(app_options) do
   cb = MittensUi::CheckBox(label: "Enable")
   cb.value = "Some Value"
   cb.toggle { puts "checkbox was toggled! associated value: #{cb.value}" }
+
+  link = MittensUi::WebLink("YouTube", "https://www.youtube.com")
 end

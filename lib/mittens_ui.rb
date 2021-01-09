@@ -8,12 +8,17 @@ require "mittens_ui/widgets/slider"
 require "mittens_ui/widgets/switch"
 require "mittens_ui/widgets/image"
 require "mittens_ui/widgets/checkbox"
+require "mittens_ui/widgets/web_link"
 
 require "gtk3"
 
 module MittensUi
   class Error < StandardError; end
 
+	def self.WebLink(url, options={})
+  	MittensUi::Widgets::WebLink.new(url, options)
+	end
+	
 	def self.CheckBox(options={})
   	MittensUi::Widgets::Checkbox.new(options)
 	end
