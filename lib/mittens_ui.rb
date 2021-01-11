@@ -15,10 +15,10 @@ require "gtk3"
 module MittensUi
   class Error < StandardError; end
 
-	def self.WebLink(url, options={})
-  	MittensUi::Widgets::WebLink.new(url, options)
+	def self.WebLink(url, name, options={})
+  	MittensUi::Widgets::WebLink.new(url, name, options)
 	end
-	
+
 	def self.CheckBox(options={})
   	MittensUi::Widgets::Checkbox.new(options)
 	end
@@ -57,16 +57,17 @@ module MittensUi
 
   class Application
     class << self
-      def Window(options = {}, &block)  
+      def Window(options = {}, &block)
         init_gtk_application(options, block)
       end
-  
-      private 
+
+      private
 
       def set_process_name(name)
         # Doesn't work in MacOS Activity Monitor or Windows Task Manager. It shows up as "Ruby".
         Process.setproctitle(name)
         $PROGRAM_NAME = name
+        $0 = name
       end
 
       def init_gtk_application(options, block)
@@ -113,7 +114,7 @@ module MittensUi
       set_status(job_t)
     end
 
-    private 
+    private
     def set_status(thread)
       @status = thread.status
     end

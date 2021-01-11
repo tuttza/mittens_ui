@@ -14,7 +14,7 @@ MittensUi::Application.Window(app_options) do
   text_box = MittensUi::Textbox(can_edit: true)
 
   listbox_options = {
-    top: 10, 
+    top: 10,
     items: ["item_1", "item_2", "item_3"]
   }.freeze
 
@@ -27,9 +27,9 @@ MittensUi::Application.Window(app_options) do
   s.slide { |s| puts s.value }
 
   img_opts = {
-    tooltip_text: "The Gnome LOGO!", 
-    width: 200, 
-    height: 200, 
+    tooltip_text: "The Gnome LOGO!",
+    width: 200,
+    height: 200,
     left: 50
   }.freeze
 
@@ -57,5 +57,5 @@ MittensUi::Application.Window(app_options) do
   cb.value = "Some Value"
   cb.toggle { puts "checkbox was toggled! associated value: #{cb.value}" }
 
-  link = MittensUi::WebLink("YouTube", "https://www.youtube.com")
+  link = MittensUi::WebLink("YouTube", "https://www.youtube.com", left: 200)
 end
