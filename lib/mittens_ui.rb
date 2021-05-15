@@ -9,11 +9,16 @@ require "mittens_ui/widgets/switch"
 require "mittens_ui/widgets/image"
 require "mittens_ui/widgets/checkbox"
 require "mittens_ui/widgets/web_link"
+require "mittens_ui/widgets/table_view"
 
 require "gtk3"
 
 module MittensUi
   class Error < StandardError; end
+  
+  def self.TableView(options={})
+    MittensUi::Widgets::TableView.new(options)
+  end
 
 	def self.WebLink(url, name, options={})
   	MittensUi::Widgets::WebLink.new(url, name, options)

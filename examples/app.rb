@@ -50,7 +50,7 @@ MittensUi::Application.Window(app_options) do
       img.show
     else
       img.hide
-    end
+    end 
   end
 
   cb = MittensUi::CheckBox(label: "Enable")
@@ -58,4 +58,15 @@ MittensUi::Application.Window(app_options) do
   cb.toggle { puts "checkbox was toggled! associated value: #{cb.value}" }
 
   link = MittensUi::WebLink("YouTube", "https://www.youtube.com", left: 200)
+  
+  table_view_options = {
+    headers: ["HEADER 1", "HEADER 2"],
+    data: [ ["1 one", "2 two"], ["3 three", "4 four"] ]
+  }
+  
+  table = MittensUi::TableView(table_view_options)
 end
+
+
+
+
