@@ -13,9 +13,11 @@ module MittensUi
    
         @tree_view = Gtk::TreeView.new(@list_store)
         @tree_view.selection.set_mode(:single)
+
         
         @columns.each { |col| @tree_view.append_column(col) }
         
+        init_sortable_columns
         
         init_data_rows(data)
         
@@ -24,20 +26,42 @@ module MittensUi
         super(@tree_view)
       end
       
-      def add(data)
-        iter = @list_store.append
-        
+      def add(data, direction=:append)
+        case direction
+        when :append
+          iter = @list_store.append
+        when :prepend
+          iter = @list_store.prepend
+        else
+          iter = @list_store.append
+        end
+          
         data.each_with_index do |item, idx|
           iter[idx] = item
         end
       end
       
+      def clear
+        @list_store.clear
+      end
+       
       def remove_selected
         iter = @tree_view.selection.selected
         iter ? @list_store.remove(iter) : nil
       end
       
       private
+      
+      def init_sortable_columns
+        @columns.each_with_index do |col, idx|
+          col.sort_indicator = true
+          col.sort_column_id = idx
+          
+          col.signal_connect('clicked') do |w|
+            w.sort_order = w.sort_order == :ascending ? :descending : :ascending
+          end
+        end
+      end
      
       def init_list_store
         types = []

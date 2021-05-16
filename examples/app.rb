@@ -69,7 +69,7 @@ MittensUi::Application.Window(app_options) do
   }
   
   table = MittensUi::TableView(table_view_options)
-  table.add(["Sara Akigawa", "777 tyo ave.", "932-333-1325"])
+  table.add(["Sara Akigawa", "777 tyo ave.", "932-333-1325"], :prepend)
   
   remove_ct = MittensUi::Button(title: "Remove Contact")
   remove_ct.click { |btn| table.remove_selected }
