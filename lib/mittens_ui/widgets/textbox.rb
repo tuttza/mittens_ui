@@ -16,6 +16,10 @@ module MittensUi
         super(@textbox)
       end
 
+      def clear
+        @textbox.text = ""
+      end
+
       def text
         @textbox.text
       end
