@@ -1,8 +1,8 @@
 require '../lib/mittens_ui'
 
 app_options = {
-  name: "say_hello",
-  title: "The Say Hello App!",
+  name: "hello_world",
+  title: "Hello World App!",
   height: 650,
   width: 550,
   can_resize: true
@@ -75,7 +75,4 @@ MittensUi::Application.Window(app_options) do
   remove_ct.click { |btn| table.remove_selected }
   
 end
-
-
-
 
