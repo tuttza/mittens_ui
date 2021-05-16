@@ -6,52 +6,62 @@ module MittensUi
       def initialize(options={})
         headers = options[:headers] || []
         data    = options[:data]    || []
-        
-        init_headers(headers)
-        
-        init_model
-   
-        @tree_view = Gtk::TreeView.new(@model)
 
-        @columns.each { |col| @tree_view.append_column(col) }
+        init_column_headers(headers)
         
+        init_list_store
+   
+        @tree_view = Gtk::TreeView.new(@list_store)
         @tree_view.selection.set_mode(:single)
         
-        init_data(data)
+        @columns.each { |col| @tree_view.append_column(col) }
+        
+        
+        init_data_rows(data)
         
         $vertical_box.pack_start(@tree_view)
 
         super(@tree_view)
       end
       
-      private
-     
-      def init_model
-        types = []
-        @columns.size.times { types << String }
-        @model = Gtk::ListStore.new(*types)
-      end
-      
-      def init_data(data)
-        data.each do |arr|
-          arr.each do |a|
-          iter = @model.append
-            iter[0] = a
-          end
+      def add(data)
+        iter = @list_store.append
+        
+        data.each_with_index do |item, idx|
+          iter[idx] = item
         end
       end
       
-      def init_headers(headers_list)
+      def remove_selected
+        iter = @tree_view.selection.selected
+        iter ? @list_store.remove(iter) : nil
+      end
+      
+      private
+     
+      def init_list_store
+        types = []
+        @columns.size.times { types << String }
+        @list_store = Gtk::ListStore.new(*types)
+      end
+      
+      def init_data_rows(data)
+        data.each_with_index do |items_arr|
+          iter = @list_store.append
+          items_arr.each_with_index do |item, idx|
+            iter[idx] = item
+           end
+        end
+      end
+      
+      def init_column_headers(headers_list)
         renderer = Gtk::CellRendererText.new
-        renderer.background = "grey"
         
         @columns = []
         
         headers_list.each_with_index do |h, i|
           next unless h.class == String
-          i = i + 1
-          set_bg = ( 2 % i == 0 ) ? 1 : 0
-          @columns << Gtk::TreeViewColumn.new(h, renderer, text: i-1, background_set: set_bg)
+          @columns << Gtk::TreeViewColumn.new(h, renderer, text: i)
         end
       end
       

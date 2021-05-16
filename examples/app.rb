@@ -60,11 +60,20 @@ MittensUi::Application.Window(app_options) do
   link = MittensUi::WebLink("YouTube", "https://www.youtube.com", left: 200)
   
   table_view_options = {
-    headers: ["HEADER 1", "HEADER 2"],
-    data: [ ["1 one", "2 two"], ["3 three", "4 four"] ]
+    headers: ["Name", "Address", "Phone #"],
+    data: [ 
+      [ "John Appleseed", "123 abc st.", "111-555-3333" ],
+      [ "Jane Doe", "122 abc st.", "111-555-4444" ],
+      [ "Bobby Jones", "434 bfef ave.", "442-333-1342"],
+     ],
   }
   
   table = MittensUi::TableView(table_view_options)
+  table.add(["Sara Akigawa", "777 tyo ave.", "932-333-1325"])
+  
+  remove_ct = MittensUi::Button(title: "Remove Contact")
+  remove_ct.click { |btn| table.remove_selected }
+  
 end
 
 
