@@ -30,6 +30,8 @@ module MittensUi
       end
       
       def add(data, direction=:append)
+        return if data.size.zero?
+        
         case direction
         when :append
           iter = @list_store.append

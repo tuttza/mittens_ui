@@ -30,12 +30,12 @@ MittensUi::Application.Window(app_options) do
     tooltip_text: "The Gnome LOGO!",
     width: 200,
     height: 200,
-    left: 50
+    left: 20
   }.freeze
 
   img = MittensUi::Image("./assets/gnome_logo.png", img_opts)
 
-  switch = MittensUi::Switch(left: 120 )
+  switch = MittensUi::Switch(left: 220 )
 
   img.click do
     unless switch.hidden?
@@ -58,7 +58,10 @@ MittensUi::Application.Window(app_options) do
   cb.toggle { puts "checkbox was toggled! associated value: #{cb.value}" }
 
   link = MittensUi::WebLink("YouTube", "https://www.youtube.com", left: 200)
-  
+
+  MittensUi::Label("Contact Info (use delimiter: ',')", top: 30)
+  contact_tb = MittensUi::Textbox(can_edit: true)
+
   table_view_options = {
     headers: ["Name", "Address", "Phone #"],
     data: [ 
@@ -70,7 +73,10 @@ MittensUi::Application.Window(app_options) do
   
   table = MittensUi::TableView(table_view_options)
   table.add(["Sara Akigawa", "777 tyo ave.", "932-333-1325"], :prepend)
-  
+
+  add_ct = MittensUi::Button(title: "Add Contact")
+  add_ct.click {|_b|  table.add(contact_tb.text.split(",")); contact_tb.clear }
+
   remove_ct = MittensUi::Button(title: "Remove Contact")
   remove_ct.click { |btn| table.remove_selected }
   
