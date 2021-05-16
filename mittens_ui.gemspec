@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Zach Tuttle"]
   spec.email         = ["tuttle_zach@icloud.com"]
   spec.licenses      = ['MIT']
-  spec.summary       = "A tiny GUI toolkit written on top of GTK3"
+  spec.summary       = "A tiny GUI toolkit written on top of GTK"
   spec.description   = "GUI Toolkit!"
   spec.homepage      = "https://github.com/tuttza/mittens_ui"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")

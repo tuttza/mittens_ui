@@ -62,7 +62,7 @@ MittensUi::Application.Window(app_options) do
   table_view_options = {
     headers: ["Name", "Address", "Phone #"],
     data: [ 
-      [ "John Appleseed", "123 abc st.", "111-555-3333" ],
+      [ "John Appleseed", "123 abc st.", "111-555-3333"],
       [ "Jane Doe", "122 abc st.", "111-555-4444" ],
       [ "Bobby Jones", "434 bfef ave.", "442-333-1342"],
      ],

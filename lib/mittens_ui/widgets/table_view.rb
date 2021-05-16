@@ -7,13 +7,16 @@ module MittensUi
         headers = options[:headers] || []
         data    = options[:data]    || []
 
+        unless is_data_valid?(headers, data)
+          exit 1
+        end
+
         init_column_headers(headers)
         
         init_list_store
    
         @tree_view = Gtk::TreeView.new(@list_store)
         @tree_view.selection.set_mode(:single)
-
         
         @columns.each { |col| @tree_view.append_column(col) }
         
@@ -51,6 +54,40 @@ module MittensUi
       end
       
       private
+
+      def is_data_valid?(headers, data)
+        column_size = headers.size
+
+        data_is_array = data.class == Array
+        headers_is_array = headers.class == Array
+
+        unless data_is_array
+          puts "=====[MittensUi: Critical Error]====="
+          puts "Incoming data must be an Array of Arrays: data = [ [el..], [el...] ]"
+        end
+
+        unless headers_is_array
+          puts "=====[MittensUi: Critical Error]====="
+          puts "Incoming data must be an Array of Arrays: data = [ [el..], [el...] ]"
+        end
+
+        data.each_with_index do |row, idx|
+          # Row data must be an Array.
+          # The size of the Row Array must match the size of the Header columns.
+          valid = row.class == Array && column_size == row.size ? true : false
+
+          unless valid
+            puts 
+            puts "=====[MittensUi: Critical Error]====="
+            puts "The length of your data(Row) must match the length of the headers."
+            puts "Failed at Row:  #{idx}"
+            puts "Row Length:     #{row.size}"
+            puts "Header Length   #{column_size}"
+            puts
+            return valid
+          end
+        end
+      end
       
       def init_sortable_columns
         @columns.each_with_index do |col, idx|

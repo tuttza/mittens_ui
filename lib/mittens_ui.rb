@@ -60,6 +60,13 @@ module MittensUi
     MittensUi::Widgets::Button.new(options)
   end
 
+  def self.Shutdown
+    $app_window.signal_connect("delete-event") do |_widget| 
+      yield
+      Gtk.main_quit 
+    end
+  end
+
   class Application
     class << self
       def Window(options = {}, &block)

@@ -26,8 +26,8 @@ Or install it yourself as:
 require "mittens_ui"
 
 app_options = {
-  name: "say_hello",
-  title: "The Say Hello App!",
+  name: "hello_world",
+  title: "Hello World App!",
   height: 650,
   width: 550,
   can_resize: true
@@ -39,7 +39,7 @@ MittensUi::Application.Window(app_options) do
   text_box = MittensUi::Textbox(can_edit: true)
 
   listbox_options = {
-    top: 10, 
+    top: 10,
     items: ["item_1", "item_2", "item_3"]
   }.freeze
 
@@ -52,9 +52,9 @@ MittensUi::Application.Window(app_options) do
   s.slide { |s| puts s.value }
 
   img_opts = {
-    tooltip_text: "The Gnome LOGO!", 
-    width: 200, 
-    height: 200, 
+    tooltip_text: "The Gnome LOGO!",
+    width: 200,
+    height: 200,
     left: 50
   }.freeze
 
@@ -75,9 +75,33 @@ MittensUi::Application.Window(app_options) do
       img.show
     else
       img.hide
-    end
+    end 
   end
+
+  cb = MittensUi::CheckBox(label: "Enable")
+  cb.value = "Some Value"
+  cb.toggle { puts "checkbox was toggled! associated value: #{cb.value}" }
+
+  link = MittensUi::WebLink("YouTube", "https://www.youtube.com", left: 200)
+  
+  table_view_options = {
+    headers: ["Name", "Address", "Phone #"],
+    data: [ 
+      [ "John Appleseed", "123 abc st.", "111-555-3333"],
+      [ "Jane Doe", "122 abc st.", "111-555-4444" ],
+      [ "Bobby Jones", "434 bfef ave.", "442-333-1342"],
+     ],
+  }
+  
+  table = MittensUi::TableView(table_view_options)
+  table.add(["Sara Akigawa", "777 tyo ave.", "932-333-1325"], :prepend)
+  
+  remove_ct = MittensUi::Button(title: "Remove Contact")
+  remove_ct.click { |btn| table.remove_selected }
+  
 end
+
+
 ```
 
 ## Development
