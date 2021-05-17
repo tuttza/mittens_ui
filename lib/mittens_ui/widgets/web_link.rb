@@ -7,9 +7,10 @@ module MittensUi
       
       def initialize(name, url, options={})
         @name = name || nil
-				@url = url || nil
+        
+        @url = url || nil
 				
-				@web_link = Gtk::LinkButton.new(@url, @name)
+	@web_link = Gtk::LinkButton.new(@url, @name)
 				
         set_margin_from_opts_for(@web_link, options)
 

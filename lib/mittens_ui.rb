@@ -20,13 +20,13 @@ module MittensUi
     MittensUi::Widgets::TableView.new(options)
   end
 
-	def self.WebLink(url, name, options={})
-  	MittensUi::Widgets::WebLink.new(url, name, options)
-	end
+  def self.WebLink(url, name, options={})
+    MittensUi::Widgets::WebLink.new(url, name, options)
+  end
 
-	def self.CheckBox(options={})
-  	MittensUi::Widgets::Checkbox.new(options)
-	end
+  def self.CheckBox(options={})
+    MittensUi::Widgets::Checkbox.new(options)
+  end
 
   def self.Image(path, options={})
     MittensUi::Widgets::Image.new(path, options)
