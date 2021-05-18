@@ -63,14 +63,20 @@ module MittensUi
         data_is_array = data.class == Array
         headers_is_array = headers.class == Array
 
+        valid = true
+
         unless data_is_array
           puts "=====[MittensUi: Critical Error]====="
           puts "Incoming data must be an Array of Arrays: data = [ [el..], [el...] ]"
+          valid = false
+          return valid
         end
 
         unless headers_is_array
           puts "=====[MittensUi: Critical Error]====="
           puts "Incoming data must be an Array of Arrays: data = [ [el..], [el...] ]"
+          valid = false
+          return valid
         end
 
         data.each_with_index do |row, idx|
@@ -83,8 +89,8 @@ module MittensUi
             puts "=====[MittensUi: Critical Error]====="
             puts "The length of your data(Row) must match the length of the headers."
             puts "Failed at Row:  #{idx}"
-            puts "Row Length:     #{row.size}"
-            puts "Header Length   #{column_size}"
+            puts "Row Length:     #{row.size} elements"
+            puts "Header Length   #{column_size} elements"
             puts
             return valid
           end
