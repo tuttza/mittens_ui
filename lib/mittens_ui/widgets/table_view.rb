@@ -49,12 +49,32 @@ module MittensUi
       def clear
         @list_store.clear
       end
+
+
+      def row_count
+        count = 0
+        @list_store.each { |item| count += 1 }
+
+        return count
+      end
        
       def remove_selected
         iter = @tree_view.selection.selected
         iter ? @list_store.remove(iter) : nil
       end
       
+      def row_clicked
+        @tree_view.signal_connect("row-activated") do |tv, path, column|
+          row = tv.selection.selected
+
+          values = []
+
+          @list_store.n_columns.times { |x| values << row.get_value(x) if row }
+        
+          yield(values)
+        end
+      end
+
       private
 
       def is_data_valid?(headers, data)
