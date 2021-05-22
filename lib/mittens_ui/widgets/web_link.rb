@@ -6,11 +6,11 @@ module MittensUi
       attr_accessor :url
       
       def initialize(name, url, options={})
-        @name = name || nil
+        @name = name || ""
         
         @url = url || nil
-				
-	@web_link = Gtk::LinkButton.new(@url, @name)
+
+        @web_link = Gtk::LinkButton.new(@url, @name)
 				
         set_margin_from_opts_for(@web_link, options)
 

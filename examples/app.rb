@@ -75,10 +75,24 @@ MittensUi::Application.Window(app_options) do
   table.add(["Sara Akigawa", "777 tyo ave.", "932-333-1325"], :prepend)
 
   add_ct = MittensUi::Button(title: "Add Contact")
-  add_ct.click {|_b|  table.add(contact_tb.text.split(",")); contact_tb.clear }
+  add_ct.click {|_b|  table.add(contact_tb.text.split(",")); contact_tb.clear; puts "Row Count: #{table.row_count}" }
+
+  table.row_clicked { |row| puts row.inspect }
 
   remove_ct = MittensUi::Button(title: "Remove Contact")
   remove_ct.click { |btn| table.remove_selected }
-  
+
+  MittensUi::Shutdown() do 
+    puts "quitting...."
+  end
+
+
+  open_file_picker = MittensUi::Button(title: "Choose File")
+
+  open_file_picker.click do
+    picked_file_path = MittensUi::FilePicker()
+    puts picked_file_path.inspect
+  end
+
 end
 
