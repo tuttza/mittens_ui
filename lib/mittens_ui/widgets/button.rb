@@ -16,7 +16,7 @@ module MittensUi
       end
 
       def click
-        @button.signal_connect "clicked" do |button_widget|
+        @button.signal_connect("clicked") do |button_widget|
           yield(button_widget)
         end
       end

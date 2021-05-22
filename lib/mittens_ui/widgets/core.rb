@@ -23,6 +23,10 @@ module MittensUi
         return if @core_widget.nil?
         @core_widget.hide
       end
+
+      def remove
+        $vertical_box.remove(@core_widget)
+      end
     end
   end
 end

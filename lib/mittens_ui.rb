@@ -10,11 +10,23 @@ require "mittens_ui/widgets/image"
 require "mittens_ui/widgets/checkbox"
 require "mittens_ui/widgets/web_link"
 require "mittens_ui/widgets/table_view"
+require "mittens_ui/widgets/loader"
+
+require "mittens_ui/dialogs/file_dialog"
 
 require "gtk3"
 
 module MittensUi
   class Error < StandardError; end
+
+  def self.Loader(options={})
+    MittensUi::Widgets::Loader.new(options)
+  end
+
+  def self.FilePicker
+    fp = MittensUi::Dialogs::File.new
+    return fp.path
+  end
   
   def self.TableView(options={})
     MittensUi::Widgets::TableView.new(options)
@@ -91,7 +103,7 @@ module MittensUi
 
         set_process_name(app_name)
 
-        gtk_app_name = "org.gtk.mittens_ui.#{app_name}"
+        gtk_app_name = "org.mittens_ui.#{app_name}"
 
         app = Gtk::Application.new(gtk_app_name, :flags_none)
 

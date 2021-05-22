@@ -86,13 +86,21 @@ MittensUi::Application.Window(app_options) do
     puts "quitting...."
   end
 
-
   open_file_picker = MittensUi::Button(title: "Choose File")
 
   open_file_picker.click do
     picked_file_path = MittensUi::FilePicker()
     puts picked_file_path.inspect
+    open_file_picker.remove
   end
+
+  loader = MittensUi::Loader()
+
+  t = Thread.new { 
+    puts "sleeping for 10 secs"
+    sleep 10
+    loader.remove
+  }
 
 end
 
