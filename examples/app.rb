@@ -5,7 +5,7 @@ app_options = {
   title: "Hello World App!",
   height: 650,
   width: 550,
-  can_resize: true
+  can_resize: false
 }.freeze
 
 MittensUi::Application.Window(app_options) do
@@ -94,13 +94,25 @@ MittensUi::Application.Window(app_options) do
     open_file_picker.remove
   end
 
+
+
+  start_loader = MittensUi::Button(title: "Start Loader")
+
   loader = MittensUi::Loader()
 
-  t = Thread.new { 
-    puts "sleeping for 10 secs"
-    sleep 10
-    loader.remove
-  }
+  start_loader.click do
+    loader.start {
+      puts "Doing some work..."
+      num = 0
+      100.times do 
+        num += 1
+        puts num
+        sleep 0.2
+      end
+
+      start_loader.remove
+    }
+  end
 
 end
 

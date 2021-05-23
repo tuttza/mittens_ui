@@ -75,26 +75,24 @@ module MittensUi
   def self.Shutdown
     $app_window.signal_connect("delete-event") do |_widget| 
       yield
-      Gtk.main_quit 
     end
   end
 
   class Application
     class << self
       def Window(options = {}, &block)
-        init_gtk_application(options, block)
+        init_gtk_application(options, &block)
       end
 
       private
 
       def set_process_name(name)
-        # Doesn't work in MacOS Activity Monitor or Windows Task Manager. It shows up as "Ruby".
         Process.setproctitle(name)
         $PROGRAM_NAME = name
         $0 = name
       end
 
-      def init_gtk_application(options, block)
+      def init_gtk_application(options, &block)
         app_name    = options[:name].nil?       ? "mittens_ui_app" : options[:name]
         height      = options[:height].nil?     ? 600 : options[:height]
         width       = options[:width].nil?      ? 400 : options[:width]
@@ -113,7 +111,7 @@ module MittensUi
           $vertical_box = Gtk::Box.new(:vertical, 10)
           scrolled_window.add($vertical_box)
           $app_window.add(scrolled_window)
-          block.call($app_window, $vertical_box)
+          yield($app_window, $vertical_box)
           $app_window.set_size_request(width, height)
           $app_window.set_title(title)
           $app_window.set_resizable(can_resize)
@@ -122,25 +120,6 @@ module MittensUi
 
         app.run
       end
-    end
-  end
-
-  class Job
-    attr_reader :name, :status
-
-    def initialize(name)
-      @name = name
-      @status = nil
-    end
-
-    def run(&block)
-      job_t = Thread.new { |_t| yield }
-      set_status(job_t)
-    end
-
-    private
-    def set_status(thread)
-      @status = thread.status
     end
   end
 end

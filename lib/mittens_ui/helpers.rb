@@ -11,7 +11,7 @@ module MittensUi
       end
 
       unless margin_bottom.nil?
-        widget.set_margin_bottom(margin_top)
+        widget.set_margin_bottom(margin_bottom)
       end
 
       unless margin_left.nil?

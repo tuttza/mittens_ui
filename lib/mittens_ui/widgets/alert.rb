@@ -3,10 +3,10 @@ module MittensUi
     class Alert
       def initialize(message, options)
         dialog_options = {
-          title: "Alert",
+          title: options[:title] || "Alert",
           parent: $app_window,
           flags: [:modal, :destroy_with_parent],
-          :buttons => [["_OK", :none]]
+          :buttons => [[Gtk::Stock::OK, :none]]
         }.freeze
 
         alert_dialog = Gtk::Dialog.new(dialog_options)
