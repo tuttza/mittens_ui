@@ -94,8 +94,6 @@ MittensUi::Application.Window(app_options) do
     open_file_picker.remove
   end
 
-
-
   start_loader = MittensUi::Button(title: "Start Loader")
 
   loader = MittensUi::Loader()

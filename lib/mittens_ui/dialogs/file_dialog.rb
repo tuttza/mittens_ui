@@ -10,7 +10,10 @@ module MittensUi
           title: "Select File",
           parent: $app_window,
           action: options[:action] || :open,
-          buttons: [[Gtk::Stock::OPEN, Gtk::ResponseType::ACCEPT], [Gtk::Stock::CANCEL, Gtk::ResponseType::CANCEL]]
+          buttons: [
+            [Gtk::Stock::OPEN, Gtk::ResponseType::ACCEPT], 
+            [Gtk::Stock::CANCEL, Gtk::ResponseType::CANCEL]
+          ]
         }.freeze
         
         dialog = Gtk::FileChooserDialog.new(dialog_options)
