@@ -110,6 +110,10 @@ Simply fork and clone this repo to your machine, cd into it and run `bundle inst
 
 This does require GTK ruby gem which requires `gtk` native dependencies to be complied and installed on your system.
 
+#### Fedora
+Using dnf:
+* `$ sudo dnf install ruby ruby-devel cairo cairo-devel gtk3-devel`
+
 #### MacOS
 
 Using Brew:
