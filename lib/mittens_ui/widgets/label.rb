@@ -10,11 +10,9 @@ module MittensUi
 
         @label = Gtk::Label.new(text)
 
-        set_margin_from_opts_for(@label, options)
-
         $vertical_box.pack_start(@label)
 
-        super(@label)
+        super(@label, options)
       end
     end
   end

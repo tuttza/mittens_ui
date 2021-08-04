@@ -8,11 +8,9 @@ module MittensUi
 
         @processing = false
 
-        set_margin_from_opts_for(@spinner, options)
-
         $vertical_box.pack_end(@spinner)
 
-        super(@spinner)
+        super(@spinner, options)
 
         self.hide
       end

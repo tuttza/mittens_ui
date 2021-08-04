@@ -11,11 +11,9 @@ module MittensUi
 				@value = nil
         @checkbox = Gtk::CheckButton.new(label)
 
-        set_margin_from_opts_for(@checkbox, options)
-
         $vertical_box.pack_start(@checkbox)
 
-        super(@checkbox)
+        super(@checkbox, options)
       end
 
       def toggle

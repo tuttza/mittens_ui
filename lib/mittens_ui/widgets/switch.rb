@@ -7,8 +7,6 @@ module MittensUi
         @switch = Gtk::Switch.new
         @switch.set_active(false)
 
-        set_margin_from_opts_for(@switch, options)
-
         # We need a Grid within our global $vertical_box layout
         # in order to make the Widget look good (meaning not overly streched).
         grid = Gtk::Grid.new
@@ -18,7 +16,7 @@ module MittensUi
         
         $vertical_box.pack_start(grid)
 
-        super(@switch)
+        super(@switch, options)
       end
 
       def activate

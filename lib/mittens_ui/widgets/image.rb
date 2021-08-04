@@ -17,13 +17,11 @@ module MittensUi
         @image = Gtk::Image.new(pixbuf: pixbuf)
         @image.tooltip_text = tooltip_text
 
-        set_margin_from_opts_for(@image, options)
-
         @event_box = Gtk::EventBox.new.add_child(@image)
 
         $vertical_box.pack_start(@event_box)
 
-        super(@image)
+        super(@image, options)
       end
 
       def click 

@@ -12,11 +12,9 @@ module MittensUi
 
         @web_link = Gtk::LinkButton.new(@url, @name)
 				
-        set_margin_from_opts_for(@web_link, options)
-
         $vertical_box.pack_start(@web_link)
 
-        super(@web_link)
+        super(@web_link, options)
       end
     end
   end
