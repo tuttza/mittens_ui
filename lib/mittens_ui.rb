@@ -12,12 +12,18 @@ require "mittens_ui/widgets/web_link"
 require "mittens_ui/widgets/table_view"
 require "mittens_ui/widgets/loader"
 
+require "mittens_ui/layouts/hbox"
+
 require "mittens_ui/dialogs/file_dialog"
 
 require "gtk3"
 
 module MittensUi
   class Error < StandardError; end
+
+  def self.HBox(widgets, options={}, &block)
+    MittensUi::Layouts::HBox.new(widgets, options, &block)
+  end
 
   def self.Loader(options={})
     MittensUi::Widgets::Loader.new(options)
