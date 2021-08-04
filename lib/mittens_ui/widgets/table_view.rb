@@ -3,6 +3,7 @@ require_relative "./core"
 module MittensUi
   module Widgets
     class TableView < Core
+
       def initialize(options={})
         headers = options[:headers] || []
         data    = options[:data]    || []
@@ -15,18 +16,23 @@ module MittensUi
         
         init_list_store
    
+        scrolled_window = Gtk::ScrolledWindow.new
+        calc_min_height = (data.size * 10) - 20
+        scrolled_window.min_content_height = calc_min_height
+
         @tree_view = Gtk::TreeView.new(@list_store)
         @tree_view.selection.set_mode(:single)
-        
+
         @columns.each { |col| @tree_view.append_column(col) }
         
         init_sortable_columns
         
         init_data_rows(data)
         
-        $vertical_box.pack_start(@tree_view)
+        scrolled_window.add(@tree_view)
+        $vertical_box.pack_start(scrolled_window)
 
-        super(@tree_view)
+        super(@tree_view, options)
       end
       
       def add(data, direction=:append)
@@ -57,10 +63,16 @@ module MittensUi
 
         return count
       end
-       
+
       def remove_selected
         iter = @tree_view.selection.selected
-        iter ? @list_store.remove(iter) : nil
+        
+        values = []
+        @list_store.n_columns.times { |x| values << @list_store.get_value(iter, x) }
+        
+        @list_store.remove(iter)
+        
+        return values
       end
       
       def row_clicked
@@ -70,7 +82,7 @@ module MittensUi
           values = []
 
           @list_store.n_columns.times { |x| values << row.get_value(x) if row }
-        
+          
           yield(values)
         end
       end
@@ -80,7 +92,7 @@ module MittensUi
       def is_data_valid?(headers, data)
         column_size = headers.size
 
-        data_is_array = data.class == Array
+        data_is_array    = data.class == Array
         headers_is_array = headers.class == Array
 
         valid = true
@@ -102,7 +114,7 @@ module MittensUi
         data.each_with_index do |row, idx|
           # Row data must be an Array.
           # The size of the Row Array must match the size of the Header columns.
-          valid = row.class == Array && column_size == row.size ? true : false
+          valid = (row.class == Array && column_size == row.size) ? true : false
 
           unless valid
             puts 
