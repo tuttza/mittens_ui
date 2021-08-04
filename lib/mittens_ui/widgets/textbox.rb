@@ -7,9 +7,11 @@ module MittensUi
         @textbox    = Gtk::Entry.new
         can_edit    = options[:can_edit].nil? ?  true : options[:can_edit]
         max_length  = options[:max_length].nil? ? 200 : options[:max_length]
-        
+        placeholder_text = options[:placeholder] || ""
+
         @textbox.set_editable(can_edit) unless can_edit.nil?
         @textbox.set_max_length(max_length) unless max_length.nil?
+        @textbox.set_placeholder_text(placeholder_text)
 
         $vertical_box.pack_start(@textbox)
 
