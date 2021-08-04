@@ -27,66 +27,18 @@ Or install it yourself as:
 ## Usage
 
 ```ruby
-require "mittens_ui"
+require '../lib/mittens_ui'
 
 app_options = {
-  name: "hello_world",
-  title: "Hello World App!",
-  height: 650,
-  width: 550,
+  name: "contacts",
+  title: "Contacts",
+  height: 615,
+  width: 570,
   can_resize: true
 }.freeze
 
+
 MittensUi::Application.Window(app_options) do
-  MittensUi::Label("Enter Name:", top: 30)
-
-  text_box = MittensUi::Textbox(can_edit: true)
-
-  listbox_options = {
-    top: 10,
-    items: ["item_1", "item_2", "item_3"]
-  }.freeze
-
-  listbox = MittensUi::ListBox(listbox_options)
-
-  btn = MittensUi::Button(title: "Click Here")
-  btn.click {|_b| MittensUi::Alert("Hello #{text_box.text} AND! #{listbox.selected_value} was selected.") }
-
-  s = MittensUi::Slider({ start_value: 1, stop_value: 100, initial_value: 30 })
-  s.slide { |s| puts s.value }
-
-  img_opts = {
-    tooltip_text: "The Gnome LOGO!",
-    width: 200,
-    height: 200,
-    left: 50
-  }.freeze
-
-  img = MittensUi::Image("./assets/gnome_logo.png", img_opts)
-
-  switch = MittensUi::Switch(left: 120 )
-
-  img.click do
-    unless switch.hidden?
-      switch.show
-    else
-      switch.hide
-    end
-  end
-
-  switch.on do
-    unless img.hidden?
-      img.show
-    else
-      img.hide
-    end 
-  end
-
-  cb = MittensUi::CheckBox(label: "Enable")
-  cb.value = "Some Value"
-  cb.toggle { puts "checkbox was toggled! associated value: #{cb.value}" }
-
-  link = MittensUi::WebLink("YouTube", "https://www.youtube.com", left: 200)
   
   table_view_options = {
     headers: ["Name", "Address", "Phone #"],
@@ -94,17 +46,73 @@ MittensUi::Application.Window(app_options) do
       [ "John Appleseed", "123 abc st.", "111-555-3333"],
       [ "Jane Doe", "122 abc st.", "111-555-4444" ],
       [ "Bobby Jones", "434 bfef ave.", "442-333-1342"],
+      [ "Sara Akigawa", "777 tyo ave.", "932-333-1325"],
      ],
+     top: 20
   }
   
-  table = MittensUi::TableView(table_view_options)
-  table.add(["Sara Akigawa", "777 tyo ave.", "932-333-1325"], :prepend)
-  
-  remove_ct = MittensUi::Button(title: "Remove Contact")
-  remove_ct.click { |btn| table.remove_selected }
-  
-end
+  contacts_table = MittensUi::TableView(table_view_options)
 
+ 
+  # FORM
+  MittensUi::Label("Add Contact", top: 30)
+
+  switch = MittensUi::Switch(left: 254)
+
+  name_tb = MittensUi::Textbox(can_edit: true, placeholder: "Name...")
+  addr_tb = MittensUi::Textbox(can_edit: true, placeholder: "Address...")
+  phne_tb = MittensUi::Textbox(can_edit: true, placeholder: "Phone #...")
+
+  tb_list = [name_tb, addr_tb, phne_tb].freeze
+
+  add_contact_button    = nil
+  remove_contact_button = nil
+
+  buttons = [MittensUi::Button(title: "+ Add"), MittensUi::Button(title: "- Remove")]
+
+  MittensUi::HBox(buttons, left: 190) do |widgets|
+    add_contact_button, remove_contact_button = widgets
+  end
+
+  switch.activate do 
+    if switch.status == :on
+      tb_list.each(&:hide)
+      add_contact_button.hide
+      remove_contact_button.hide
+    end 
+
+    if switch.status == :off
+      tb_list.each(&:show)
+      add_contact_button.show
+      remove_contact_button.show
+    end
+  end
+
+  # ACTONS
+  add_contact_button.click do |_b| 
+    if tb_list.map { |tb| tb.text.length > 0 }.all?
+      contacts_table.add(tb_list.map {|tb| tb.text })
+      tb_list.map {|tb| tb.clear }
+    end
+  end
+
+  remove_contact_button.click do |btn| 
+    removed = contacts_table.remove_selected 
+    MittensUi::Alert("#{removed[0]} was removed.")
+  end
+
+  contacts_table.row_clicked do |data|
+    msg = <<~MSG
+      Contact Info:
+
+      Name:        #{data[0]}
+      Address:     #{data[1]}
+      Phone #:     #{data[2]}
+    MSG
+
+    MittensUi::Alert(msg)
+  end
+end
 
 ```
 
