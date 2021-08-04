@@ -30,7 +30,7 @@ module MittensUi
       alias :on :activate
 
       def status
-        @switch.active? ? 'on' : 'off'
+        @switch.active? ? :on : :off
       end
     end
   end
