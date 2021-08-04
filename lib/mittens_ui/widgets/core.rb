@@ -7,8 +7,9 @@ module MittensUi
 
       # All MittenUi::Widgets::* classes should inherit from this base class.
 
-      def initialize(widget)
+      def initialize(widget, options={})
         @core_widget = widget
+        set_margin_from_opts_for(@core_widget, options)
       end
 
       def show
