@@ -111,6 +111,8 @@ module MittensUi
 
         app = Gtk::Application.new(gtk_app_name, :flags_none)
 
+        app_assets_path = File.join(File.expand_path(File.dirname(__FILE__)), "mittens_ui", "assets") + "/"
+
         app.signal_connect("activate") do |application|
           $app_window = Gtk::ApplicationWindow.new(application)
           scrolled_window = Gtk::ScrolledWindow.new
@@ -121,6 +123,7 @@ module MittensUi
           $app_window.set_size_request(width, height)
           $app_window.set_title(title)
           $app_window.set_resizable(can_resize)
+          $app_window.set_icon_from_file(app_assets_path + "icon.png")
           $app_window.show_all
         end
 
