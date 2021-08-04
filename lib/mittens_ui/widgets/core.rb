@@ -5,9 +5,12 @@ module MittensUi
     class Core    
       include Helpers
 
+      attr_reader :core_widget
+
       # All MittenUi::Widgets::* classes should inherit from this base class.
 
       def initialize(widget, options={})
+        # core_widget is the Raw Gtk::Widget*
         @core_widget = widget
         set_margin_from_opts_for(@core_widget, options)
       end
