@@ -8,11 +8,13 @@ module MittensUi
 
         @button = Gtk::Button.new(label: button_title)
 
-        set_margin_from_opts_for(@button, options)
-
         $vertical_box.pack_start(@button)
 
-        super(@button)
+        super(@button, options)
+      end
+
+      def enable(answer)
+        @button.set_sensitive(answer)
       end
 
       def click
