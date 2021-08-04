@@ -4,6 +4,10 @@ This is a small vertical stacking GUI toolkit inspired by Ruby Shoes and built o
 around GTK. The goal of this project is make creating GUIs in Ruby dead simple 
 without the UI framework/library getting your way.
 
+
+![alt text](https://github.com/tuttza/mittens_ui/blob/d1c3f229d8d721add3cbf06dcfb88fa62a96f2a9/lib/mittens_ui/assets/mittens_ui_preview.gif "Mittens::Ui Preview")
+
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -114,11 +118,8 @@ This does require GTK ruby gem which requires `gtk` native dependencies to be co
 Using dnf:
 * `$ sudo dnf install ruby ruby-devel cairo cairo-devel gtk3-devel`
 
-#### MacOS
-
-Using Brew:
-* `$ brew install gtk+3`
-* `$ brew install cairo`
+#### Ubuntu
+* `sudo apt install build-essential git sqlite3 libsqlite3-dev lib-gtk-3 libcairo2-dev`
 
 ## Contributing
 
