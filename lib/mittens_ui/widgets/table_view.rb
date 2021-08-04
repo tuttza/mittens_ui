@@ -17,7 +17,7 @@ module MittensUi
         init_list_store
    
         scrolled_window = Gtk::ScrolledWindow.new
-        calc_min_height = (data.size * 10) - 20
+        calc_min_height = (data.size ** 2 ) * 10
         scrolled_window.min_content_height = calc_min_height
 
         @tree_view = Gtk::TreeView.new(@list_store)
