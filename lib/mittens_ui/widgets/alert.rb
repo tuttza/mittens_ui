@@ -17,7 +17,7 @@ module MittensUi
         alert_dialog.set_resizable(false)
 
         message_label = Gtk::Label.new(message)
-        message_label.set_margin_top(65)
+        message_label.set_margin_top(36)
 
         dialog_box = alert_dialog.content_area
         dialog_box.add(message_label)
