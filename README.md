@@ -27,7 +27,7 @@ Or install it yourself as:
 ## Usage
 
 ```ruby
-require '../lib/mittens_ui'
+require 'mittens_ui'
 
 app_options = {
   name: "contacts",
@@ -77,14 +77,12 @@ MittensUi::Application.Window(app_options) do
   switch.activate do 
     if switch.status == :on
       tb_list.each(&:hide)
-      add_contact_button.hide
-      remove_contact_button.hide
+      buttons.each(&:hide)
     end 
 
     if switch.status == :off
       tb_list.each(&:show)
-      add_contact_button.show
-      remove_contact_button.show
+      buttons.each(&:show)
     end
   end
 
