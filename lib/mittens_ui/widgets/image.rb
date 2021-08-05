@@ -12,9 +12,19 @@ module MittensUi
         width        = options[:width].nil?        ? 80 : options[:width]
         height       = options[:height].nil?       ? 80 : options[:height]
 
-        pixbuf = GdkPixbuf::Pixbuf.new(file: @path, width: width, height: height)
+        pixbuf = nil
+
+        args_to_send = {}
+
+        if path.include?(".gif")
+          pixbuf = GdkPixbuf::PixbufAnimation.new(@path)
+          args_to_send[:animation] = pixbuf
+        else
+          pixbuf = GdkPixbuf::Pixbuf.new(file: @path, width: width, height: height)
+          args_to_send[:pixbuf] = pixbuf
+        end
         
-        @image = Gtk::Image.new(pixbuf: pixbuf)
+        @image = Gtk::Image.new(args_to_send)
         @image.tooltip_text = tooltip_text
 
         @event_box = Gtk::EventBox.new.add_child(@image)
