@@ -4,7 +4,7 @@ This is a small vertical stacking GUI toolkit inspired by Ruby Shoes and built o
 around GTK. The goal of this project is make creating GUIs in Ruby dead simple 
 without the UI framework/library getting your way.
 
-![alt_text]("https://github.com/tuttza/mittens_ui/blob/d46121fef96dd9f954d58aefc73c7e77df9c9118/lib/mittens_ui/assets/mittens_ui_preview.gif")
+![alt_text](https://github.com/tuttza/mittens_ui/blob/d46121fef96dd9f954d58aefc73c7e77df9c9118/lib/mittens_ui/assets/mittens_ui_preview.gif, "Mittens Preview")
 
 
 ## Installation
