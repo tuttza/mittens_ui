@@ -4,8 +4,7 @@ This is a small vertical stacking GUI toolkit inspired by Ruby Shoes and built o
 around GTK. The goal of this project is make creating GUIs in Ruby dead simple 
 without the UI framework/library getting your way.
 
-
-![alt text](https://github.com/tuttza/mittens_ui/blob/d1c3f229d8d721add3cbf06dcfb88fa62a96f2a9/lib/mittens_ui/assets/mittens_ui_preview.gif "Mittens::Ui Preview")
+![alt_text]("https://github.com/tuttza/mittens_ui/blob/d46121fef96dd9f954d58aefc73c7e77df9c9118/lib/mittens_ui/assets/mittens_ui_preview.gif")
 
 
 ## Installation
@@ -39,6 +38,14 @@ app_options = {
 
 
 MittensUi::Application.Window(app_options) do
+  add_contact_button    = nil
+  remove_contact_button = nil
+
+  buttons = [MittensUi::Button(title: "Add"), MittensUi::Button(title: "Remove")]
+
+  MittensUi::HeaderBar(buttons, title: "Contacts") do |widgets|
+    add_contact_button, remove_contact_button = widgets
+  end
   
   table_view_options = {
     headers: ["Name", "Address", "Phone #"],
@@ -57,36 +64,15 @@ MittensUi::Application.Window(app_options) do
   # FORM
   MittensUi::Label("Add Contact", top: 30)
 
-  switch = MittensUi::Switch(left: 254)
-
   name_tb = MittensUi::Textbox(can_edit: true, placeholder: "Name...")
   addr_tb = MittensUi::Textbox(can_edit: true, placeholder: "Address...")
   phne_tb = MittensUi::Textbox(can_edit: true, placeholder: "Phone #...")
 
   tb_list = [name_tb, addr_tb, phne_tb].freeze
 
-  add_contact_button    = nil
-  remove_contact_button = nil
-
-  buttons = [MittensUi::Button(title: "+ Add"), MittensUi::Button(title: "- Remove")]
-
-  MittensUi::HBox(buttons, left: 190) do |widgets|
-    add_contact_button, remove_contact_button = widgets
-  end
-
-  switch.activate do 
-    if switch.status == :on
-      tb_list.each(&:hide)
-      buttons.each(&:hide)
-    end 
-
-    if switch.status == :off
-      tb_list.each(&:show)
-      buttons.each(&:show)
-    end
-  end
 
   # ACTONS
+
   add_contact_button.click do |_b| 
     if tb_list.map { |tb| tb.text.length > 0 }.all?
       contacts_table.add(tb_list.map {|tb| tb.text })
@@ -96,8 +82,13 @@ MittensUi::Application.Window(app_options) do
 
   remove_contact_button.click do |btn| 
     removed = contacts_table.remove_selected 
-    MittensUi::Alert("#{removed[0]} was removed.")
+    puts removed.inspect
+
+    if removed.size > 0
+      MittensUi::Alert("#{removed[0]} was removed.")
+    end
   end
+
 
   contacts_table.row_clicked do |data|
     msg = <<~MSG
@@ -110,8 +101,6 @@ MittensUi::Application.Window(app_options) do
 
     MittensUi::Alert(msg)
   end
-end
-
 ```
 
 ## Development
