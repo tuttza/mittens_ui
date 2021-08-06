@@ -58,7 +58,6 @@ MittensUi::Application.Window(app_options) do
   }
   
   contacts_table = MittensUi::TableView(table_view_options)
-
  
   # FORM
   MittensUi::Label("Add Contact", top: 30)
@@ -71,7 +70,6 @@ MittensUi::Application.Window(app_options) do
 
 
   # ACTONS
-
   add_contact_button.click do |_b| 
     if tb_list.map { |tb| tb.text.length > 0 }.all?
       contacts_table.add(tb_list.map {|tb| tb.text })
@@ -81,13 +79,11 @@ MittensUi::Application.Window(app_options) do
 
   remove_contact_button.click do |btn| 
     removed = contacts_table.remove_selected 
-    puts removed.inspect
 
     if removed.size > 0
       MittensUi::Alert("#{removed[0]} was removed.")
     end
   end
-
 
   contacts_table.row_clicked do |data|
     msg = <<~MSG
