@@ -1,0 +1,14 @@
+====[ OS stuff ]====
+I use Ubuntu 99% of the time when developing Mittens.
+
+sudo apt install build-essential git sqlite3 lib-gtk-3*
+
+
+====[ Ruby ]====
+
+First install Ruby:
+
+https://github.com/postmodern/ruby-install#readme
+
+Make sure to add the path of the new ruby installation 
+to your $PATH.

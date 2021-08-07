@@ -10,12 +10,12 @@ app_options = {
 
 
 MittensUi::Application.Window(app_options) do
-  add_contact_button    = MittensUi::Widgets::Button.new(title: "Add")
-  remove_contact_button = MittensUi::Widgets::Button.new(title: "Remove")
+  add_contact_button    = MittensUi::Button.new(title: "Add")
+  remove_contact_button = MittensUi::Button.new(title: "Remove")
 
   buttons = [ add_contact_button, remove_contact_button ]
 
-  MittensUi::Widgets::HeaderBar.new(buttons.map(&:render), title: "Contacts", position: :left).render
+  MittensUi::HeaderBar.new(buttons.map(&:render), title: "Contacts", position: :left).render
 
   table_view_options = {
     headers: ["Name", "Address", "Phone #"],
@@ -28,24 +28,28 @@ MittensUi::Application.Window(app_options) do
      top: 20
   }
   
-  contacts_table = MittensUi::Widgets::TableView.new(table_view_options).render
+  contacts_table = MittensUi::TableView.new(table_view_options).render
 
   # FORM
-  MittensUi::Widgets::Label.new("Add Contact", top: 30).render
+  MittensUi::Label.new("Add Contact", top: 30).render
 
-  name_tb = MittensUi::Widgets::Textbox.new(can_edit: true, placeholder: "Name...")
-  addr_tb = MittensUi::Widgets::Textbox.new(can_edit: true, placeholder: "Address...")
-  phne_tb = MittensUi::Widgets::Textbox.new(can_edit: true, placeholder: "Phone #...")
+  name_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Name...")
+  addr_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Address...")
+  phne_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Phone #...")
 
   tb_list = [name_tb, addr_tb, phne_tb].map(&:render).freeze
 
-  MittensUi::Layouts::HBox.new(tb_list, spacing: 10).render
+  MittensUi::HBox.new(tb_list, spacing: 10).render
+
+  fp = MittensUi::FilePicker.new
 
   # ACTONS
+
   add_contact_button.click do |_b| 
     if tb_list.map { |tb| tb.text.length > 0 }.all?
       contacts_table.add(tb_list.map {|tb| tb.text })
       tb_list.map {|tb| tb.clear }
+        puts "#{fp.render.path}"
     end
   end
 
@@ -53,7 +57,7 @@ MittensUi::Application.Window(app_options) do
     removed = contacts_table.remove_selected 
 
     if removed.size > 0
-      MittensUi::Widgets::Alert.new("#{removed[0]} was removed.").render
+      MittensUi::Alert.new("#{removed[0]} was removed.").render
     end
   end
 
@@ -66,6 +70,6 @@ MittensUi::Application.Window(app_options) do
       Phone #:     #{data[2]}
     MSG
 
-    MittensUi::Widgets::Alert.new(msg).render
+    MittensUi::Alert.new(msg).render
   end
 end
