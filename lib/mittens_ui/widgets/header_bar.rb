@@ -5,7 +5,7 @@ module MittensUi
     class HeaderBar < Core
       def initialize(widgets, options = {}, &block)
         title     = options[:title].nil? ? "" : options[:title]
-        position  = options[:position].nil? ? :start : options[:position]
+        position  = options[:position].nil? ? :left : options[:position]
 
         box = Gtk::Box.new(:horizontal, 0)
         box.style_context.add_class("linked")
@@ -18,20 +18,20 @@ module MittensUi
         widgets.each do |w|
           w.remove
           case position
-          when :start
+          when :left
             box.pack_start(w.core_widget)
-          when :end
+          when :right
             box.pack_end(w.core_widget)
           else
             box.pack_start(w.core_widget)
           end  
         end
 
-        if position == :start 
+        if position == :left 
           @header.pack_start(box)
         end
 
-        if position == :end
+        if position == :right
           @header.pack_end(box)
         end
 
