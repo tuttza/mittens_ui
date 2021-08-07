@@ -12,9 +12,12 @@ module MittensUi
 
         @web_link = Gtk::LinkButton.new(@url, @name)
 				
-        $vertical_box.pack_start(@web_link)
-
         super(@web_link, options)
+      end
+
+      def render
+        $vertical_box.pack_start(@web_link)
+        return self
       end
     end
   end

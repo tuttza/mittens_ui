@@ -9,13 +9,11 @@ module MittensUi
 
         # We need a Grid within our global $vertical_box layout
         # in order to make the Widget look good (meaning not overly streched).
-        grid = Gtk::Grid.new
-        grid.set_column_spacing(1)
-        grid.set_row_spacing(1)
-        grid.attach(@switch, 0, 0, 1, 1) 
+        @grid = Gtk::Grid.new
+        @grid.set_column_spacing(1)
+        @grid.set_row_spacing(1)
+        @grid.attach(@switch, 0, 0, 1, 1) 
         
-        $vertical_box.pack_start(grid)
-
         super(@switch, options)
       end
 
@@ -26,6 +24,11 @@ module MittensUi
         end
       end
       alias :on :activate
+
+      def render
+        $vertical_box.pack_start(@grid)
+        return self
+      end
 
       def status
         @switch.active? ? :on : :off

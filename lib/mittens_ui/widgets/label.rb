@@ -9,10 +9,12 @@ module MittensUi
         end
 
         @label = Gtk::Label.new(text)
-
-        $vertical_box.pack_start(@label)
-
         super(@label, options)
+      end
+
+      def render
+        $vertical_box.pack_start(@label)
+        return self
       end
     end
   end

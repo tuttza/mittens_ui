@@ -14,8 +14,6 @@ module MittensUi
         @scale.draw_value = true
         @scale.value = init_value
 
-        $vertical_box.pack_start(@scale)
-
         super(@scale)
       end
 
@@ -24,8 +22,13 @@ module MittensUi
           yield(scale_widget)
         end
       end
-
       alias :slide :move
+
+      def render
+        $vertical_box.pack_start(@scale)
+        return self
+      end
+      
     end
   end
 end

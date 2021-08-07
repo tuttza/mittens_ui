@@ -12,76 +12,14 @@ require "mittens_ui/widgets/web_link"
 require "mittens_ui/widgets/table_view"
 require "mittens_ui/widgets/loader"
 require "mittens_ui/widgets/header_bar"
+require "mittens_ui/widgets/file_picker"
 
 require "mittens_ui/layouts/hbox"
-
-require "mittens_ui/dialogs/file_dialog"
 
 require "gtk3"
 
 module MittensUi
   class Error < StandardError; end
-
-  def self.HeaderBar(widgets, options={}, &block)
-    MittensUi::Widgets::HeaderBar.new(widgets, options, &block)
-  end
-
-  def self.HBox(widgets, options={}, &block)
-    MittensUi::Layouts::HBox.new(widgets, options, &block)
-  end
-
-  def self.Loader(options={})
-    MittensUi::Widgets::Loader.new(options)
-  end
-
-  def self.FilePicker
-    fp = MittensUi::Dialogs::File.new
-    return fp.path
-  end
-  
-  def self.TableView(options={})
-    MittensUi::Widgets::TableView.new(options)
-  end
-
-  def self.WebLink(url, name, options={})
-    MittensUi::Widgets::WebLink.new(url, name, options)
-  end
-
-  def self.CheckBox(options={})
-    MittensUi::Widgets::Checkbox.new(options)
-  end
-
-  def self.Image(path, options={})
-    MittensUi::Widgets::Image.new(path, options)
-  end
-
-  def self.Switch(options = {})
-    MittensUi::Widgets::Switch.new(options)
-  end
-
-  def self.Slider(options = {})
-    MittensUi::Widgets::Slider.new(options)
-  end
-
-  def self.ListBox(options = {})
-    MittensUi::Widgets::ListBox.new(options)
-  end
-
-  def self.Alert(message, options = {})
-    MittensUi::Widgets::Alert.new(message, options)
-  end
-
-  def self.Label(text, options = {})
-    MittensUi::Widgets::Label.new(text, options)
-  end
-
-  def self.Textbox(options = {})
-    MittensUi::Widgets::Textbox.new(options)
-  end
-
-  def self.Button(options = {})
-    MittensUi::Widgets::Button.new(options)
-  end
 
   def self.Shutdown
     $app_window.signal_connect("delete-event") do |_widget| 

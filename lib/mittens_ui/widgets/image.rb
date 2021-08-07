@@ -29,8 +29,6 @@ module MittensUi
 
         @event_box = Gtk::EventBox.new.add_child(@image)
 
-        $vertical_box.pack_start(@event_box)
-
         super(@image, options)
       end
 
@@ -39,6 +37,12 @@ module MittensUi
           yield
         end    
       end
+
+      def render
+        $vertical_box.pack_start(@event_box)
+        return self
+      end
+      
     end
   end
 end

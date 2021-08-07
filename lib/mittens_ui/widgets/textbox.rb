@@ -13,9 +13,7 @@ module MittensUi
         @textbox.set_max_length(max_length) unless max_length.nil?
         @textbox.set_placeholder_text(placeholder_text)
 
-        $vertical_box.pack_start(@textbox)
-
-        super(@textbox)
+        super(@textbox, options)
       end
 
       def clear
@@ -24,6 +22,11 @@ module MittensUi
 
       def text
         @textbox.text
+      end
+
+      def render
+        $vertical_box.pack_start(@textbox)
+        return self
       end
     end
   end

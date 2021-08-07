@@ -16,9 +16,9 @@ module MittensUi
         
         init_list_store
    
-        scrolled_window = Gtk::ScrolledWindow.new
+        @scrolled_window = Gtk::ScrolledWindow.new
         calc_min_height = (data.size ** 2 ) * 10
-        scrolled_window.min_content_height = calc_min_height
+        @scrolled_window.min_content_height = calc_min_height
 
         @tree_view = Gtk::TreeView.new(@list_store)
         @tree_view.selection.set_mode(:single)
@@ -29,8 +29,7 @@ module MittensUi
         
         init_data_rows(data)
         
-        scrolled_window.add(@tree_view)
-        $vertical_box.pack_start(scrolled_window)
+        @scrolled_window.add(@tree_view)
 
         super(@tree_view, options)
       end
@@ -56,6 +55,10 @@ module MittensUi
         @list_store.clear
       end
 
+      def render
+        $vertical_box.pack_start(@scrolled_window)
+        return self
+      end
 
       def row_count
         count = 0

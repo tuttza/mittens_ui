@@ -27,6 +27,11 @@ module MittensUi
         @worker_thread = Thread.new { yield; self.remove; @processing = true }
       end
 
+      def render
+        $vertical_box.pack_end(@spinner)
+        return self
+      end
+
     end
   end
 end

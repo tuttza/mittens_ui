@@ -3,7 +3,7 @@ require_relative "./core"
 module MittensUi
   module Widgets
     class HeaderBar < Core
-      def initialize(widgets, options = {}, &block)
+      def initialize(widgets, options = {})
         title     = options[:title].nil? ? "" : options[:title]
         position  = options[:position].nil? ? :left : options[:position]
 
@@ -36,11 +36,13 @@ module MittensUi
         end
 
         $app_window.titlebar = @header
-        $vertical_box.pack_start(@header)
-
-        yield(widgets)
 
         super(@header, options)
+      end
+
+      def render
+        $vertical_box.pack_start(@header)
+        return self
       end
 
     end

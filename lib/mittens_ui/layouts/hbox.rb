@@ -18,15 +18,16 @@ module MittensUi
           w.remove
           self.attach(w.core_widget, { position: :start }) 
         end
-        
-        yield(widgets)
-
-        $vertical_box.pack_start(@box)
       end
 
       def remove
         return if @box.nil?
         @box.destroy
+      end
+
+      def render
+        $vertical_box.pack_start(@box)
+        return self
       end
 
       private

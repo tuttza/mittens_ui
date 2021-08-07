@@ -26,8 +26,6 @@ module MittensUi
 
         @gtk_combobox.set_active(0)
 
-        $vertical_box.pack_start(@gtk_combobox)
-
         super(@gtk_combobox)
       end
 
@@ -40,6 +38,12 @@ module MittensUi
         @selected_value
       end
       alias :selected_value :get_selected_value
+
+      def render
+        $vertical_box.pack_start(@gtk_combobox)
+        return self
+      end
+      
     end
   end
 end

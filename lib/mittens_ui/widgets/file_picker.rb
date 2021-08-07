@@ -1,6 +1,6 @@
 module MittensUi
-	module Dialogs
-    class File
+	module Widgets
+    class FilePicker
       attr_reader :path
 
       def initialize(options={})
@@ -16,13 +16,15 @@ module MittensUi
           ]
         }.freeze
         
-        dialog = Gtk::FileChooserDialog.new(dialog_options)
-        
-        if dialog.run == :accept
-          @path = dialog.filename
+        @dialog = Gtk::FileChooserDialog.new(dialog_options)
+      end
+
+      def render
+        if @dialog.run == :accept
+          @path = @dialog.filename
         end
 
-        dialog.destroy
+        @dialog.destroy
       end
     end
   end
