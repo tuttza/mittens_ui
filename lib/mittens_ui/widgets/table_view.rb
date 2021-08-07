@@ -66,9 +66,16 @@ module MittensUi
 
       def remove_selected
         iter = @tree_view.selection.selected
-        
+
         values = []
-        @list_store.n_columns.times { |x| values << @list_store.get_value(iter, x) }
+
+        if iter.nil?
+          return values
+        end
+        
+        @list_store.n_columns.times do |x| 
+          values << @list_store.get_value(iter, x)
+        end
         
         @list_store.remove(iter)
         
