@@ -10,6 +10,14 @@ app_options = {
 
 
 MittensUi::Application.Window(app_options) do
+  add_contact_button    = nil
+  remove_contact_button = nil
+
+  buttons = [MittensUi::Button(title: "Add"), MittensUi::Button(title: "Remove")]
+
+  MittensUi::HeaderBar(buttons, title: "Contacts", position: :start) do |widgets|
+    add_contact_button, remove_contact_button = widgets
+  end
   
   table_view_options = {
     headers: ["Name", "Address", "Phone #"],
@@ -24,11 +32,8 @@ MittensUi::Application.Window(app_options) do
   
   contacts_table = MittensUi::TableView(table_view_options)
 
- 
   # FORM
   MittensUi::Label("Add Contact", top: 30)
-
-  switch = MittensUi::Switch(left: 254)
 
   name_tb = MittensUi::Textbox(can_edit: true, placeholder: "Name...")
   addr_tb = MittensUi::Textbox(can_edit: true, placeholder: "Address...")
@@ -36,28 +41,6 @@ MittensUi::Application.Window(app_options) do
 
   tb_list = [name_tb, addr_tb, phne_tb].freeze
 
-  add_contact_button    = nil
-  remove_contact_button = nil
-
-  buttons = [MittensUi::Button(title: "+ Add"), MittensUi::Button(title: "- Remove")]
-
-  MittensUi::HBox(buttons, left: 190) do |widgets|
-    add_contact_button, remove_contact_button = widgets
-  end
-
-  switch.activate do 
-    if switch.status == :on
-      tb_list.each(&:hide)
-      add_contact_button.hide
-      remove_contact_button.hide
-    end 
-
-    if switch.status == :off
-      tb_list.each(&:show)
-      add_contact_button.show
-      remove_contact_button.show
-    end
-  end
 
   # ACTONS
 
@@ -70,9 +53,11 @@ MittensUi::Application.Window(app_options) do
 
   remove_contact_button.click do |btn| 
     removed = contacts_table.remove_selected 
-    MittensUi::Alert("#{removed[0]} was removed.")
-  end
 
+    if removed.size > 0
+      MittensUi::Alert("#{removed[0]} was removed.")
+    end
+  end
 
   contacts_table.row_clicked do |data|
     msg = <<~MSG
@@ -85,5 +70,4 @@ MittensUi::Application.Window(app_options) do
 
     MittensUi::Alert(msg)
   end
-
 end

@@ -5,10 +5,16 @@ app_options = {
   title: "Hello World App!",
   height: 650,
   width: 550,
-  can_resize: false
+  can_resize: true
 }.freeze
 
 MittensUi::Application.Window(app_options) do
+
+  MittensUi::HeaderBar([
+    MittensUi::Button(title: "headerbar button"),
+    MittensUi::CheckBox(label: "Checkbox")
+  ], title: "Demo App", position: :left) {}
+
   MittensUi::Label("Enter Name:", top: 30)
 
   text_box = MittensUi::Textbox(can_edit: true)
@@ -34,6 +40,8 @@ MittensUi::Application.Window(app_options) do
   }.freeze
 
   img = MittensUi::Image("./assets/gnome_logo.png", img_opts)
+
+  img2 = MittensUi::Image("./assets/mittens_ui_preview.gif", img_opts)
 
   switch = MittensUi::Switch(left: 220 )
 
