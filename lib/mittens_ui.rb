@@ -11,6 +11,7 @@ require "mittens_ui/widgets/checkbox"
 require "mittens_ui/widgets/web_link"
 require "mittens_ui/widgets/table_view"
 require "mittens_ui/widgets/loader"
+require "mittens_ui/widgets/header_bar"
 
 require "mittens_ui/layouts/hbox"
 
@@ -20,6 +21,10 @@ require "gtk3"
 
 module MittensUi
   class Error < StandardError; end
+
+  def self.HeaderBar(widgets, options={}, &block)
+    MittensUi::Widgets::HeaderBar.new(widgets, options, &block)
+  end
 
   def self.HBox(widgets, options={}, &block)
     MittensUi::Layouts::HBox.new(widgets, options, &block)
@@ -105,13 +110,16 @@ module MittensUi
         title       = options[:title].nil?      ? "Mittens App" : options[:title]
         can_resize  = options[:can_resize].nil? ? true : options[:can_resize]
 
+        app_assets_path = File.join(File.expand_path(File.dirname(__FILE__)), "mittens_ui", "assets") + "/"
+        default_icon = app_assets_path + "icon.png"
+        
+        app_icon = options[:icon].nil? ? default_icon : options[:icon]
+
         set_process_name(app_name)
 
         gtk_app_name = "org.mittens_ui.#{app_name}"
 
         app = Gtk::Application.new(gtk_app_name, :flags_none)
-
-        app_assets_path = File.join(File.expand_path(File.dirname(__FILE__)), "mittens_ui", "assets") + "/"
 
         app.signal_connect("activate") do |application|
           $app_window = Gtk::ApplicationWindow.new(application)
@@ -123,7 +131,7 @@ module MittensUi
           $app_window.set_size_request(width, height)
           $app_window.set_title(title)
           $app_window.set_resizable(can_resize)
-          $app_window.set_icon_from_file(app_assets_path + "icon.png")
+          $app_window.set_icon_from_file(app_icon)
           $app_window.show_all
         end
 
