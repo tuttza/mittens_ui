@@ -19,6 +19,21 @@ module MittensUi
       @textbox.text = ""
     end
 
+    def enable_text_completion(data)
+      completion = Gtk::EntryCompletion.new
+      @textbox.completion = completion
+
+      model = Gtk::ListStore.new(String)
+
+      data.each do |value|
+        iter = model.append
+        iter[0] = value
+      end
+
+      completion.model = model
+      completion.text_column = 0
+    end
+
     def text
       @textbox.text
     end
