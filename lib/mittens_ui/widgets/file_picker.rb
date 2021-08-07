@@ -1,5 +1,5 @@
 module MittensUi
-	module Widgets
+  module Widgets
     class FilePicker
       attr_reader :path
 

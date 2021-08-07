@@ -42,7 +42,6 @@ MittensUi::Application.Window(app_options) do
   MittensUi::Layouts::HBox.new(tb_list, spacing: 10).render
 
   # ACTONS
-
   add_contact_button.click do |_b| 
     if tb_list.map { |tb| tb.text.length > 0 }.all?
       contacts_table.add(tb_list.map {|tb| tb.text })
