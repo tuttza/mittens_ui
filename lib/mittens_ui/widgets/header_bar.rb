@@ -27,7 +27,13 @@ module MittensUi
           end  
         end
 
-        @header.pack_start(box)
+        if position == :start 
+          @header.pack_start(box)
+        end
+
+        if position == :end
+          @header.pack_end(box)
+        end
 
         $app_window.titlebar = @header
         $vertical_box.pack_start(@header)
