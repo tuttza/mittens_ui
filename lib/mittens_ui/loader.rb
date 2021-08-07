@@ -7,8 +7,6 @@ module MittensUi
 
       @processing = false
 
-      $vertical_box.pack_end(@spinner)
-
       super(@spinner, options)
 
       self.hide
