@@ -1,11 +1,22 @@
 require_relative "./core"
+require "mittens_ui/helpers"
 
 module MittensUi
   class Button < Core
-    def initialize(options={})
-      button_title  = options[:title] || "Button"
+    include Helpers
 
-      @button = Gtk::Button.new(label: button_title)
+    def initialize(options={})
+      button_title  = options[:title] || "Button"  
+
+      icon_type = options[:icon] || nil   
+
+      if icon_type
+        image = Gtk::Image.new(icon_name: icon_map[icon_type], size: @button)
+        @button = Gtk::Button.new
+        @button.add(image)
+      else
+        @button = Gtk::Button.new(label: button_title)
+      end
 
       super(@button, options)
     end

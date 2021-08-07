@@ -10,8 +10,8 @@ app_options = {
 
 
 MittensUi::Application.Window(app_options) do
-  add_contact_button    = MittensUi::Button.new(title: "Add")
-  remove_contact_button = MittensUi::Button.new(title: "Remove")
+  add_contact_button    = MittensUi::Button.new(title: "Add", icon: :add_green)
+  remove_contact_button = MittensUi::Button.new(title: "Remove", icon: :remove_red)
 
   buttons = [ add_contact_button, remove_contact_button ]
 

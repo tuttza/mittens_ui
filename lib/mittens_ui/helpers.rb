@@ -1,5 +1,19 @@
 module MittensUi
   module Helpers
+    def icon_map
+      {
+        add:    "list-add-symbolic",
+        remove: "list-remove-symbolic",
+        add_green: 'add',
+        remove_red: 'remove'
+      }.freeze
+    end
+
+    def list_system_icons
+      @theme = Gtk::IconTheme.default
+      puts @theme.icons
+    end
+
     def set_margin_from_opts_for(widget, options={})
       margin_top    = options[:top].nil?    ? nil : options[:top]
       margin_bottom = options[:bottom].nil? ? nil : options[:bottom]
