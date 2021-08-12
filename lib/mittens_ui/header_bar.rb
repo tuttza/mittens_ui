@@ -34,13 +34,11 @@ module MittensUi
         @header.pack_end(box)
       end
 
-      $app_window.titlebar = @header
-
       super(@header, options)
     end
 
     def render
-      $vertical_box.pack_start(@header)
+      $app_window.titlebar = @header
       return self
     end
 
