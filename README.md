@@ -35,18 +35,6 @@ app_options = {
   can_resize: true
 }.freeze
 
-
-require '../lib/mittens_ui'
-
-app_options = {
-  name: "contacts",
-  title: "Contacts",
-  height: 615,
-  width: 570,
-  can_resize: true
-}.freeze
-
-
 MittensUi::Application.Window(app_options) do
   add_contact_button    = MittensUi::Button.new(title: "Add")
   remove_contact_button = MittensUi::Button.new(title: "Remove")
