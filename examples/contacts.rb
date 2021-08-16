@@ -41,15 +41,11 @@ MittensUi::Application.Window(app_options) do
 
   MittensUi::HBox.new(tb_list, spacing: 10).render
 
-  fp = MittensUi::FilePicker.new
-
   # ACTONS
-
   add_contact_button.click do |_b| 
     if tb_list.map { |tb| tb.text.length > 0 }.all?
       contacts_table.add(tb_list.map {|tb| tb.text })
       tb_list.map {|tb| tb.clear }
-        puts "#{fp.render.path}"
     end
   end
 
