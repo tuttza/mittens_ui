@@ -54,7 +54,6 @@ module MittensUi
 
         @menu_bar.append(root_menu_item)
       end
-
     end
 
     def create_sub_menu(hsh, root_menu)
