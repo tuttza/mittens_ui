@@ -43,13 +43,13 @@ module MittensUi
         root_menu_item = Gtk::MenuItem.new(label: key.to_s)
         root_menu_item.set_submenu(root_menu)
 
-        if value.is_a?(Hash)
-          value.each do |k, v|
-            next unless k.to_sym == :sub_menus
-            v.each_with_index do |el, index|
-              el.is_a?(String)  ? create_root_menu(el.to_s, root_menu)  : nil
-              el.is_a?(Hash)    ? create_sub_menu(el, root_menu)        : nil
-            end
+        next unless value.is_a?(Hash)
+
+        value.each do |k, v|
+          next unless k.to_sym == :sub_menus
+          v.each_with_index do |el, index|
+            el.is_a?(String)  ? create_root_menu(el.to_s, root_menu)  : nil
+            el.is_a?(Hash)    ? create_sub_menu(el, root_menu)        : nil
           end
         end
 
