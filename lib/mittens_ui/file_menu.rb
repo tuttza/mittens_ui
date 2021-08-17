@@ -45,39 +45,40 @@ module MittensUi
         if value.is_a?(Hash)
           value.each do |k, v|
             next unless k.to_sym == :sub_menus
-
             v.each_with_index do |el, index|
-              if el.is_a?(String)
-                menu_item = Gtk::MenuItem.new(label: el.to_s)
-                root_menu.append(menu_item)
-                @raw_menu_items[el.to_s] = menu_item
-              end
-
-              if el.is_a?(Hash)
-                el.each do |j, k|
-                  sub_menu = Gtk::Menu.new
-                  sub_menu_item = Gtk::MenuItem.new(label: j.to_s)
-                  sub_menu_item.set_submenu(sub_menu)
-                  root_menu.append(sub_menu_item)
-
-                  if k.is_a?(Array)
-                    k.each do |i|
-                      nested_sub_item = Gtk::MenuItem.new(label: i.to_s)
-                      sub_menu.append(nested_sub_item)
-                      @raw_menu_items[i.to_s] = nested_sub_item
-                    end
-                  end
-                end
-
-              end
+              el.is_a?(String)  ? create_root_level_menu(el.to_s, root_menu)  : nil
+              el.is_a?(Hash)    ? create_sub_level_menu(el, root_menu)        : nil
             end
-            
           end
         end
 
         @menu_bar.append(root_menu_item)
       end
 
+    end
+
+    def create_sub_level_menu(hsh, root_menu)
+      hsh.each do |j, k|
+        sub_menu = Gtk::Menu.new
+        sub_menu_item = Gtk::MenuItem.new(label: j.to_s)
+        sub_menu_item.set_submenu(sub_menu)
+        root_menu.append(sub_menu_item)
+
+        if k.is_a?(Array)
+          k.each do |i|
+            nested_sub_item = Gtk::MenuItem.new(label: i.to_s)
+            sub_menu.append(nested_sub_item)
+            @raw_menu_items[i.to_s] = nested_sub_item
+          end
+        end
+      end
+    end
+
+
+    def create_root_level_menu(str, root_menu)
+      menu_item = Gtk::MenuItem.new(label: str)
+      root_menu.append(menu_item)
+      @raw_menu_items[str] = menu_item
     end
   end
 end
