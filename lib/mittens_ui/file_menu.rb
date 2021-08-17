@@ -7,13 +7,14 @@ module MittensUi
 
       @menu_bar = Gtk::MenuBar.new
 
-      @raw_menu_items = { 
-        # menu_name => menu_item(gtk)
-      }
+      # menu_name => menu_item(gtk)
+      @raw_menu_items = {}
 
       associate_menu_items
 
       create_menu_methods
+
+      super(@menu_bar, options)
     end
 
     def render
