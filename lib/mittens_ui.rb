@@ -13,15 +13,17 @@ require "mittens_ui/table_view"
 require "mittens_ui/loader"
 require "mittens_ui/header_bar"
 require "mittens_ui/file_picker"
+require "mittens_ui/file_menu"
 require "mittens_ui/hbox"
 
 require "gtk3"
 
 module MittensUi
   class Error < StandardError; end
-
-  def self.Shutdown
+  
+  def self.Shutdown(&block)
     $app_window.signal_connect("delete-event") do |_widget| 
+      puts "delete-event detected..."
       yield
     end
   end

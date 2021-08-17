@@ -37,10 +37,10 @@ module MittensUi
 
     def associate_menu_items      
       @menu_items.each do |key, value|
-        menu = Gtk::Menu.new
+        root_menu  = Gtk::Menu.new
 
         root_menu_item = Gtk::MenuItem.new(label: key.to_s)
-        root_menu_item.set_submenu(menu)
+        root_menu_item.set_submenu(root_menu)
 
         if value.is_a?(Hash)
           value.each do |k, v|
@@ -48,22 +48,22 @@ module MittensUi
 
             v.each_with_index do |el, index|
               if el.is_a?(String)
-                sub_menu_item = Gtk::MenuItem.new(label: el.to_s)
-                menu.append(sub_menu_item)
-                @raw_menu_items[el] = sub_menu_item
+                menu_item = Gtk::MenuItem.new(label: el.to_s)
+                root_menu.append(menu_item)
+                @raw_menu_items[el.to_s] = menu_item
               end
 
               if el.is_a?(Hash)
                 el.each do |j, k|
-                  ss_menu = Gtk::Menu.new
-                  ss_root_menu_item = Gtk::MenuItem.new(label: j.to_s)
-                  ss_root_menu_item.set_submenu(ss_menu)
-                  menu.append(ss_root_menu_item)
+                  sub_menu = Gtk::Menu.new
+                  sub_menu_item = Gtk::MenuItem.new(label: j.to_s)
+                  sub_menu_item.set_submenu(sub_menu)
+                  root_menu.append(sub_menu_item)
 
                   if k.is_a?(Array)
                     k.each do |i|
                       nested_sub_item = Gtk::MenuItem.new(label: i.to_s)
-                      ss_menu.append(nested_sub_item)
+                      sub_menu.append(nested_sub_item)
                       @raw_menu_items[i.to_s] = nested_sub_item
                     end
                   end
