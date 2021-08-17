@@ -46,8 +46,8 @@ module MittensUi
           value.each do |k, v|
             next unless k.to_sym == :sub_menus
             v.each_with_index do |el, index|
-              el.is_a?(String)  ? create_root_level_menu(el.to_s, root_menu)  : nil
-              el.is_a?(Hash)    ? create_sub_level_menu(el, root_menu)        : nil
+              el.is_a?(String)  ? create_root_menu(el.to_s, root_menu)  : nil
+              el.is_a?(Hash)    ? create_sub_menu(el, root_menu)        : nil
             end
           end
         end
@@ -57,7 +57,7 @@ module MittensUi
 
     end
 
-    def create_sub_level_menu(hsh, root_menu)
+    def create_sub_menu(hsh, root_menu)
       hsh.each do |j, k|
         sub_menu = Gtk::Menu.new
         sub_menu_item = Gtk::MenuItem.new(label: j.to_s)
@@ -74,8 +74,7 @@ module MittensUi
       end
     end
 
-
-    def create_root_level_menu(str, root_menu)
+    def create_root_menu(str, root_menu)
       menu_item = Gtk::MenuItem.new(label: str)
       root_menu.append(menu_item)
       @raw_menu_items[str] = menu_item
