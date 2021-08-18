@@ -20,18 +20,20 @@ require "gtk3"
 
 module MittensUi
   class Error < StandardError; end
-  
-  def self.Shutdown(&block)
-    $app_window.signal_connect("delete-event") do |_widget| 
-      puts "delete-event detected..."
-      yield
-    end
-  end
 
   class Application
     class << self
       def Window(options = {}, &block)
         init_gtk_application(options, &block)
+      end
+
+      def exit(&block)
+        begin
+          yield if block_given?
+          Kernel.exit(0)
+        rescue => _error
+          Kernel.exit(1)
+        end
       end
 
       private
