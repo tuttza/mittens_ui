@@ -37,19 +37,19 @@ module MittensUi
     end
 
     def associate_menu_items      
-      @menu_items.each do |key, value|
+      @menu_items.each do |root_menu_label, menu_item_data|
         root_menu  = Gtk::Menu.new
 
-        root_menu_item = Gtk::MenuItem.new(label: key.to_s)
+        root_menu_item = Gtk::MenuItem.new(label: root_menu_label.to_s)
         root_menu_item.set_submenu(root_menu)
 
-        next unless value.is_a?(Hash)
+        next unless menu_item_data.is_a?(Hash)
 
-        value.each do |k, v|
-          next unless k.to_sym == :sub_menus
-          v.each do |el|
-            el.is_a?(String)  ? create_root_menu(el.to_s, root_menu)  : nil
-            el.is_a?(Hash)    ? create_sub_menu(el, root_menu)        : nil
+        menu_item_data.each do |sub_menus_key, sub_menus_item_data|
+          next unless sub_menus_key.to_sym == :sub_menus
+          sub_menus_item_data.each do |sub_menu_data|
+            sub_menu_data.is_a?(String) ? create_root_menu(sub_menu_data.to_s, root_menu) : nil
+            sub_menu_data.is_a?(Hash)   ? create_sub_menu(sub_menu_data, root_menu)       : nil
           end
         end
 
@@ -58,26 +58,26 @@ module MittensUi
     end
 
     def create_sub_menu(hsh, root_menu)
-      hsh.each do |j, k|
+      hsh.each do |sub_menu_label, sub_menu_data|
         sub_menu = Gtk::Menu.new
-        sub_menu_item = Gtk::MenuItem.new(label: j.to_s)
+        sub_menu_item = Gtk::MenuItem.new(label: sub_menu_label.to_s)
         sub_menu_item.set_submenu(sub_menu)
         root_menu.append(sub_menu_item)
 
-        if k.is_a?(Array)
-          k.each do |i|
-            nested_sub_item = Gtk::MenuItem.new(label: i.to_s)
+        if sub_menu_data.is_a?(Array)
+          sub_menu_data.each do |label|
+            nested_sub_item = Gtk::MenuItem.new(label: label.to_s)
             sub_menu.append(nested_sub_item)
-            @raw_menu_items[i.to_s] = nested_sub_item
+            @raw_menu_items[label.to_s] = nested_sub_item
           end
         end
       end
     end
 
-    def create_root_menu(str, root_menu)
-      menu_item = Gtk::MenuItem.new(label: str)
+    def create_root_menu(label, root_menu)
+      menu_item = Gtk::MenuItem.new(label: label)
       root_menu.append(menu_item)
-      @raw_menu_items[str] = menu_item
+      @raw_menu_items[label] = menu_item
     end
   end
 end
