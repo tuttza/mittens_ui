@@ -47,7 +47,7 @@ module MittensUi
 
         value.each do |k, v|
           next unless k.to_sym == :sub_menus
-          v.each_with_index do |el, index|
+          v.each do |el|
             el.is_a?(String)  ? create_root_menu(el.to_s, root_menu)  : nil
             el.is_a?(Hash)    ? create_sub_menu(el, root_menu)        : nil
           end
