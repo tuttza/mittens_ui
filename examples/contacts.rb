@@ -10,6 +10,12 @@ app_options = {
 
 
 MittensUi::Application.Window(app_options) do
+  file_menus = { 
+    "File": { sub_menus: ["Exit"] }
+  }.freeze
+  
+  fm = MittensUi::FileMenu.new(file_menus).render
+
   add_contact_button    = MittensUi::Button.new(title: "Add", icon: :add_green)
   remove_contact_button = MittensUi::Button.new(title: "Remove", icon: :remove_red)
 
@@ -68,4 +74,9 @@ MittensUi::Application.Window(app_options) do
 
     MittensUi::Alert.new(msg).render
   end
+
+  fm.exit do |fm|
+    MittensUi::Application.exit { print "Exiting App!"}
+  end
+
 end

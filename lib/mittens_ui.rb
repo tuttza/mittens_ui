@@ -13,6 +13,7 @@ require "mittens_ui/table_view"
 require "mittens_ui/loader"
 require "mittens_ui/header_bar"
 require "mittens_ui/file_picker"
+require "mittens_ui/file_menu"
 require "mittens_ui/hbox"
 
 require "gtk3"
@@ -20,16 +21,19 @@ require "gtk3"
 module MittensUi
   class Error < StandardError; end
 
-  def self.Shutdown
-    $app_window.signal_connect("delete-event") do |_widget| 
-      yield
-    end
-  end
-
   class Application
     class << self
       def Window(options = {}, &block)
         init_gtk_application(options, &block)
+      end
+
+      def exit(&block)
+        begin
+          yield if block_given?
+          Kernel.exit(0)
+        rescue => _error
+          Kernel.exit(1)
+        end
       end
 
       private
