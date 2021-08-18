@@ -36,13 +36,17 @@ MittensUi::Application.Window(app_options) do
     MittensUi::Alert.new("HELLO!").render
   end
 
+  file_menu.one do |_fm|
+    puts "You clicked one!"
+  end
+
   file_menu.world do |_fm|
     MittensUi::Alert.new("WORLD!").render
   end
 
   file_menu.quit do |_fm|
-    MittensUi::Shutdown() do
-      puts "shutting down now......"
+    MittensUi::Application.exit do 
+      puts "quitting!"
     end
   end
 end
