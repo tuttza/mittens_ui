@@ -25,10 +25,10 @@ module MittensUi
     private 
 
     def create_menu_methods
-      @raw_menu_items.each do |menu_name, menu_item|
-        menu_name = menu_name.downcase.gsub(/ /, "_").to_sym
+      @raw_menu_items.each do |menu_label, menu_item|
+        menu_label = menu_label.downcase.gsub(/ /, "_").to_sym
 
-        define_singleton_method(menu_name) do |&blk|
+        define_singleton_method(menu_label) do |&blk|
           menu_item.signal_connect("activate") do
             blk.call(self)
           end
