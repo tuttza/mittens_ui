@@ -6,7 +6,14 @@ module MittensUi
       @textbox    = Gtk::Entry.new
       can_edit    = options[:can_edit].nil? ?  true : options[:can_edit]
       max_length  = options[:max_length].nil? ? 200 : options[:max_length]
+
+      has_password = options[:password].nil? ? false : options[:password]
+
       placeholder_text = options[:placeholder] || ""
+
+      if has_password
+        @textbox.set_visibility(false)
+      end
 
       @textbox.set_editable(can_edit) unless can_edit.nil?
       @textbox.set_max_length(max_length) unless max_length.nil?
