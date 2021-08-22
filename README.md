@@ -121,5 +121,13 @@ Using dnf:
 * `sudo apt install build-essential git sqlite3 libsqlite3-dev lib-gtk-3 libcairo2-dev`
 
 ## Contributing
-
 Bug reports and pull requests are welcome on GitHub at https://github.com/tuttza/mittens_ui.
+
+After cloning the MittensUi repo, all new PRs should be done against the `development`branch, if approved will be merged in to the `main`branch.
+
+So:
+```bash
+git checkout development 
+git checkout -b dev/your_feature_idea
+
+```
