@@ -2,7 +2,9 @@ require_relative "./core"
 
 module MittensUi
   class Notify < Core
-    def initialize(msg, options={}) 
+    def initialize(msg, options={})
+      @activate_timer = options[:timer] || true
+
       @notify_bar = Gtk::InfoBar.new
       
       @notify_bar.set_show_close_button(true)
@@ -24,7 +26,7 @@ module MittensUi
       
       @notify_bar.show_all
 
-      trigger_notify_timer
+      trigger_notify_timer if @activate_timer
      
       return self
     end
