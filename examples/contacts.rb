@@ -10,9 +10,7 @@ app_options = {
 
 
 MittensUi::Application.Window(app_options) do
-  file_menus = { 
-    "File": { sub_menus: ["Exit"] }
-  }.freeze
+  file_menus = { "File": { sub_menus: ["Exit"] } }.freeze
   
   fm = MittensUi::FileMenu.new(file_menus).render
 
