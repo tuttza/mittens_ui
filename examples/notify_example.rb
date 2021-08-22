@@ -14,6 +14,6 @@ MittensUi::Application.Window(app_options) do
   btn.render
 
   btn.click do 
-    MittensUi::Notify.new("Updated!", type: :question).render
+    MittensUi::Notify.new("Updated!").render
   end
 end
