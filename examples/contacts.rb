@@ -59,7 +59,7 @@ MittensUi::Application.Window(app_options) do
     removed = contacts_table.remove_selected 
 
     if removed.size > 0
-      MittensUi::Alert.new("#{removed[0]} was removed.").render
+      MittensUi::Notify.new("#{removed[0]} was removed.", type: :info).render
     end
   end
 
