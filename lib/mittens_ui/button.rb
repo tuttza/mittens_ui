@@ -1,9 +1,7 @@
 require_relative "./core"
-require "mittens_ui/helpers"
 
 module MittensUi
   class Button < Core
-    include Helpers
 
     def initialize(options={})
       button_title  = options[:title] || "Button"  
