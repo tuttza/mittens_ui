@@ -26,7 +26,7 @@ module MittensUi
       
       init_sortable_columns
       
-      init_data_rows(data)
+      init_data_rows(data) # Populate the @list_store
       
       @scrolled_window.add(@tree_view)
 
@@ -94,6 +94,12 @@ module MittensUi
         
         yield(values)
       end
+    end
+
+    def update(fresh_data=[])
+      self.clear
+      init_data_rows(fresh_data)
+      @tree_view.set_model(@list_store)
     end
 
     private
