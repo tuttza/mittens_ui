@@ -26,6 +26,12 @@ module MittensUi
       @textbox.text = ""
     end
 
+    def on_enter(&block)
+      @textbox.signal_connect("activate") do 
+        yield
+      end
+    end
+
     def enable_text_completion(data)
       completion = Gtk::EntryCompletion.new
       @textbox.completion = completion
