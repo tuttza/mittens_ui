@@ -16,6 +16,8 @@ MittensUi::Application.Window(app_options) do
   
   fm = MittensUi::FileMenu.new(file_menus).render
 
+  contacts_search = MittensUi::Textbox.new(placeholder: "Search Contacts...", top: 10).render
+
   add_contact_button    = MittensUi::Button.new(title: "Add", icon: :add_green)
   remove_contact_button = MittensUi::Button.new(title: "Remove", icon: :remove_red)
 
@@ -23,15 +25,17 @@ MittensUi::Application.Window(app_options) do
 
   MittensUi::HeaderBar.new(buttons.map(&:render), title: "Contacts", position: :left).render
 
+  initial_contacts_data = [
+    [ "John Appleseed", "123 abc st.", "111-555-3333"],
+    [ "Jane Doe", "122 abc st.", "111-555-4444" ],
+    [ "Bobby Jones", "434 bfef ave.", "442-333-1342"],
+    [ "Sara Akigawa", "777 tyo ave.", "932-333-1325"],
+  ]
+
   table_view_options = {
     headers: ["Name", "Address", "Phone #"],
-    data: [ 
-      [ "John Appleseed", "123 abc st.", "111-555-3333"],
-      [ "Jane Doe", "122 abc st.", "111-555-4444" ],
-      [ "Bobby Jones", "434 bfef ave.", "442-333-1342"],
-      [ "Sara Akigawa", "777 tyo ave.", "932-333-1325"],
-     ],
-     top: 20
+    data: initial_contacts_data,
+    top: 20
   }
   
   contacts_table = MittensUi::TableView.new(table_view_options).render
@@ -77,6 +81,17 @@ MittensUi::Application.Window(app_options) do
 
   fm.exit do |fm|
     MittensUi::Application.exit { print "Exiting App!"}
+  end
+
+  contacts_search.on_enter do
+    query = contacts_search.text
+
+    if query == "" || query == " "
+      contacts_table.update(initial_contacts_data)
+    else
+      table_view_options[:data] = initial_contacts_data.select { |contact_array| contact_array[0].downcase.include?(query) }
+      contacts_table.update(table_view_options[:data])
+    end
   end
 
 end
