@@ -16,6 +16,7 @@ require "mittens_ui/file_picker"
 require "mittens_ui/file_menu"
 require "mittens_ui/hbox"
 require "mittens_ui/notify"
+require "mittens_ui/window"
 
 require "gtk3"
 
