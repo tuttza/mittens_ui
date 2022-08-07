@@ -17,3 +17,6 @@ mkmf.log
 .rspec_status
 
 ./releases
+
+# openbsd stuff
+*.core

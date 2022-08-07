@@ -3,7 +3,7 @@ require_relative "./core"
 module MittensUi
   class HeaderBar < Core
     def initialize(widgets, options = {})
-      title     = options[:title].nil? ? "" : options[:title]
+      title     = options[:title].nil?    ? ""    : options[:title]
       position  = options[:position].nil? ? :left : options[:position]
 
       box = Gtk::Box.new(:horizontal, 0)
@@ -14,16 +14,18 @@ module MittensUi
       @header.title = title
       @header.has_subtitle = false
 
-      widgets.each do |w|
-        w.remove
-        case position
-        when :left
-          box.pack_start(w.core_widget)
-        when :right
-          box.pack_end(w.core_widget)
-        else
-          box.pack_start(w.core_widget)
-        end  
+      unless widgets.nil? 
+        widgets.each do |w|
+          w.remove
+          case position
+          when :left
+            box.pack_start(w.core_widget)
+          when :right
+            box.pack_end(w.core_widget)
+          else
+            box.pack_start(w.core_widget)
+          end  
+        end
       end
 
       if position == :left 

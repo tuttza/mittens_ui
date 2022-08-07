@@ -5,7 +5,7 @@ module MittensUi
     attr_reader :widgets
 
     def initialize(options={})
-      title   = options[:title].nil?  ? "Window" : options[:title]
+      title    = options[:title].nil?  ? "Window" : options[:title]
       @widgets = options[:widgets].nil? ? {}     : options[:widgets]
       init_window
       @window.title = title
@@ -14,6 +14,10 @@ module MittensUi
     def render
       @window.show_all unless @window.active?
       return self
+    end
+
+    def close
+      @window.close
     end
 
     private
@@ -35,7 +39,7 @@ module MittensUi
     end
 
     def add_widgets
-      @widgets.each do |_key, widget|
+      @widgets.each do |widget|
         @vbox.pack_start(widget.core_widget)
       end
     end

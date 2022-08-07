@@ -40,14 +40,18 @@ module MittensUi
 
       private
 
+      def format_app_name(name)
+        return name.downcase.chomp.gsub(" ", "_")
+      end
+
       def set_process_name(name)
         Process.setproctitle(name)
         $PROGRAM_NAME = name
         $0 = name
       end
-
+    
       def init_gtk_application(options, &block)
-        app_name    = options[:name].nil?       ? "mittens_ui_app" : options[:name]
+        app_name    = options[:name].nil?       ? "mittens_ui_app" : format_app_name(options[:name])
         height      = options[:height].nil?     ? 600 : options[:height]
         width       = options[:width].nil?      ? 400 : options[:width]
         title       = options[:title].nil?      ? "Mittens App" : options[:title]

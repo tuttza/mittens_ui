@@ -13,12 +13,11 @@ MittensUi::Application.Window(app_options) do
   file_menus = { "File": { sub_menus: ["Exit"] } }.freeze
   
   fm = MittensUi::FileMenu.new(file_menus).render
-
+ 
   contacts_search = MittensUi::Textbox.new(placeholder: "Search Contacts...", top: 10).render
 
-  add_contact_button    = MittensUi::Button.new(title: "Add", icon: :add_green)
+  add_contact_button = MittensUi::Button.new(title: "Add", icon: :add_green)
   remove_contact_button = MittensUi::Button.new(title: "Remove", icon: :remove_red)
-
   buttons = [ add_contact_button, remove_contact_button ]
 
   MittensUi::HeaderBar.new(buttons.map(&:render), title: "Contacts", position: :left).render
@@ -38,23 +37,37 @@ MittensUi::Application.Window(app_options) do
   
   contacts_table = MittensUi::TableView.new(table_view_options).render
 
-  # FORM
-  MittensUi::Label.new("Add Contact", top: 30).render
-
-  name_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Name...")
+  # WINDOW FORM
+  #
+  name_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Name...", top: 20)
   addr_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Address...")
   phne_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Phone #...")
+  close_win = MittensUi::Button.new(title: "Done")
+  add_window_widgets = [name_tb, addr_tb, phne_tb, close_win].freeze
 
-  tb_list = [name_tb, addr_tb, phne_tb].map(&:render).freeze
+  add_window_options = { title: "Add Contact", widgets: add_window_widgets }
+  add_window = MittensUi::Window.new(add_window_options)
 
-  MittensUi::HBox.new(tb_list, spacing: 10).render
+  #MittensUi::Label.new("Add Contact", top: 30).render
+
+
+  #MittensUi::HBox.new(tb_list, spacing: 10).render
 
   # ACTONS
   add_contact_button.click do |_b| 
-    if tb_list.map { |tb| tb.text.length > 0 }.all?
-      contacts_table.add(tb_list.map {|tb| tb.text })
-      tb_list.map {|tb| tb.clear }
+    add_window.render
+  end
+
+  close_win.click do |_b| 
+    if name_tb.text.length > 0 
+      contacts_table.add([name_tb.text, addr_tb.text, phne_tb.text])
     end
+
+    name_tb.clear  
+    addr_tb.clear
+    phne_tb.clear
+
+    add_window.close
   end
 
   remove_contact_button.click do |btn| 
@@ -68,10 +81,9 @@ MittensUi::Application.Window(app_options) do
   contacts_table.row_clicked do |data|
     msg = <<~MSG
       Contact Info:
-
-      Name:        #{data[0]}
-      Address:     #{data[1]}
-      Phone #:     #{data[2]}
+        * Name:        #{data[0]}
+        * Address:     #{data[1]}
+        * Phone #:     #{data[2]}
     MSG
 
     MittensUi::Alert.new(msg).render

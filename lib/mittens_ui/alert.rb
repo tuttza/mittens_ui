@@ -8,25 +8,26 @@ module MittensUi
         :buttons => [[Gtk::Stock::OK, :none]]
       }.freeze
 
-      @alert_dialog = Gtk::Dialog.new(dialog_options)
-      @alert_dialog.set_transient_for($app_window)
-      @alert_dialog.set_default_width(420)
-      @alert_dialog.set_default_height(200)
-      @alert_dialog.set_modal(true)
-      @alert_dialog.set_resizable(false)
+      @dialog = Gtk::Dialog.new(dialog_options)
+      @dialog.set_transient_for($app_window)
+      @dialog.set_default_width(420)
+      @dialog.set_default_height(200)
+      @dialog.set_modal(true)
+      @dialog.set_resizable(false)
 
       message_label = Gtk::Label.new(message)
       message_label.set_margin_top(36)
 
-      dialog_box = @alert_dialog.content_area
+      dialog_box = @dialog.content_area
       dialog_box.add(message_label)
     end
 
     def render
-      @alert_dialog.show_all
-      response = @alert_dialog.run
-      response == :none ? @alert_dialog.destroy : @alert_dialog.destroy
+      @dialog.show_all
+      response = @dialog.run
+      response == :none ? @dialog.destroy : @dialog.destroy
     end
 
   end
 end
+
