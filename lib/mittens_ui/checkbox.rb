@@ -5,9 +5,10 @@ module MittensUi
     attr_accessor :value
     
     def initialize(options={})
-			label = options[:label] || "Checkbox"
+      label = options[:label] || "Checkbox"
 
-			@value = nil
+      @value = nil
+
       @checkbox = Gtk::CheckButton.new(label)
 
       $vertical_box.pack_start(@checkbox)

@@ -35,9 +35,14 @@ app_options = {
   can_resize: true
 }.freeze
 
+
 MittensUi::Application.Window(app_options) do
-  add_contact_button    = MittensUi::Button.new(title: "Add")
-  remove_contact_button = MittensUi::Button.new(title: "Remove")
+  file_menus = { "File": { sub_menus: ["Exit"] } }.freeze
+  
+  fm = MittensUi::FileMenu.new(file_menus).render
+
+  add_contact_button    = MittensUi::Button.new(title: "Add", icon: :add_green)
+  remove_contact_button = MittensUi::Button.new(title: "Remove", icon: :remove_red)
 
   buttons = [ add_contact_button, remove_contact_button ]
 
@@ -68,7 +73,6 @@ MittensUi::Application.Window(app_options) do
   MittensUi::HBox.new(tb_list, spacing: 10).render
 
   # ACTONS
-
   add_contact_button.click do |_b| 
     if tb_list.map { |tb| tb.text.length > 0 }.all?
       contacts_table.add(tb_list.map {|tb| tb.text })
@@ -80,7 +84,7 @@ MittensUi::Application.Window(app_options) do
     removed = contacts_table.remove_selected 
 
     if removed.size > 0
-      MittensUi::Alert.new("#{removed[0]} was removed.").render
+      MittensUi::Notify.new("#{removed[0]} was removed.", type: :info).render
     end
   end
 
@@ -95,8 +99,12 @@ MittensUi::Application.Window(app_options) do
 
     MittensUi::Alert.new(msg).render
   end
-end
 
+  fm.exit do |fm|
+    MittensUi::Application.exit { print "Exiting App!"}
+  end
+
+end
 ```
 
 ## Development
@@ -113,5 +121,13 @@ Using dnf:
 * `sudo apt install build-essential git sqlite3 libsqlite3-dev lib-gtk-3 libcairo2-dev`
 
 ## Contributing
-
 Bug reports and pull requests are welcome on GitHub at https://github.com/tuttza/mittens_ui.
+
+After cloning the MittensUi repo, all new PRs should be done against the `development`branch, if approved will be merged in to the `main`branch.
+
+So:
+```bash
+git checkout development 
+git checkout -b dev/your_feature_idea
+
+```
