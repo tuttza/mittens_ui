@@ -1,4 +1,5 @@
 require_relative "./core"
+
 module MittensUi
   class TableView < Core
     def initialize(options = {})
