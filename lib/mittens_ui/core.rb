@@ -1,17 +1,15 @@
 require "mittens_ui/helpers"
 
 module MittensUi
-  class Core    
+  class Core
     include Helpers
-
     attr_reader :core_widget
 
-    # All MittenUi::Widgets::* classes should inherit from this base class.
-
-    def initialize(widget, options={})
-      # core_widget is the Raw Gtk::Widget*
+    def initialize(widget, options = {})
       @core_widget = widget
+      @width = options[:width] || :full
       set_margin_from_opts_for(@core_widget, options)
+      render
     end
 
     def show
@@ -28,7 +26,11 @@ module MittensUi
     end
 
     def remove
-      $vertical_box.remove(@core_widget)
+      MittensUi::Application.layout.remove(@core_widget)
+    end
+
+    def render
+      MittensUi::Application.layout.add(@core_widget, width: @width)
     end
   end
 end

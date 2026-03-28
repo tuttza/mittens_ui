@@ -17,11 +17,6 @@ module MittensUi
       super(@menu_bar, options)
     end
 
-    def render
-      $vertical_box.pack_start(@menu_bar)
-      return self
-    end
-
     private 
 
     def create_menu_methods

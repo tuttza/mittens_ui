@@ -30,11 +30,5 @@ module MittensUi
         yield(button_widget)
       end
     end
-
-    def render
-      $vertical_box.pack_start(@button)
-      return self
-    end
-
   end
 end
