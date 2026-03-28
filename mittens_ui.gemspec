@@ -4,7 +4,7 @@ Gem::Specification.new do |spec|
   spec.name          = "mittens_ui"
   spec.version       = MittensUi::VERSION
   spec.authors       = ["Zach Tuttle"]
-  spec.email         = ["tuttle_zach@icloud.com"]
+  spec.email         = ["38vpgilvy@mozmail.com"]
   spec.licenses      = ['MIT']
   spec.summary       = "A tiny GUI toolkit written on top of GTK"
   spec.description   = "GUI Toolkit!"
