@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.summary       = "A tiny GUI toolkit written on top of GTK"
   spec.description   = "GUI Toolkit!"
   spec.homepage      = "https://github.com/tuttza/mittens_ui"
-  spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
+  spec.required_ruby_version = Gem::Requirement.new(">= 3.3.0")
 
   #spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
 

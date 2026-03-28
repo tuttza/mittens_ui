@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mittens_ui (0.0.11)
+    mittens_ui (0.0.12)
       gtk3
 
 GEM
@@ -90,7 +90,7 @@ CHECKSUMS
   gtk3 (4.3.5) sha256=0f7e2596544cdd024d557d2b51b7098e5ae8f815cbec22977e819c9f32508d99
   json (2.19.3) sha256=289b0bb53052a1fa8c34ab33cc750b659ba14a5c45f3fcf4b18762dc67c78646
   matrix (0.4.3) sha256=a0d5ab7ddcc1973ff690ab361b67f359acbb16958d1dc072b8b956a286564c5b
-  mittens_ui (0.0.11)
+  mittens_ui (0.0.12)
   native-package-installer (1.1.9) sha256=fbb41b6b22750791a4304f0a0aeea3dd837668892117f49c4caf2e8e0f4e792f
   pango (4.3.5) sha256=0acb9a20b719a6bf1f53fa1ac39a23b4b87bb271e34ab123bfacb7b25c8f8f8d
   pkg-config (1.6.5) sha256=33f9f81c5322983d22b439b8b672f27777b406fea23bfec74ff14bbeb42ec733
