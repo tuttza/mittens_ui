@@ -2,6 +2,17 @@ require "json"
 require "fileutils"
 
 module MittensUi
+
+  # A simple persistent key-value store backed by JSON.
+  # Data is saved to path: `~/.local/share/mittens_ui/<app_id>.json`
+  # which follows the XDG spec on Linux. Each app gets its own file keyed by app_id.
+  # 
+  # This should be used inside the MittensUi::Application block.
+  #
+  # @example Basic usage
+  #   store = MittensUi::Store.new("org.mittens_ui.someapp")
+  #   store.set(:theme, "dark")
+  #   store.get(:theme)  # => "dark"
   class Store
     def initialize(app_name)
       @app_name = app_name

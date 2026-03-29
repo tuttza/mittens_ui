@@ -27,4 +27,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   #spec.extensions    = ["ext/mittens_ui/extconf.rb"]
   spec.add_runtime_dependency("gtk3")
+
+  spec.add_development_dependency("yard")
 end
