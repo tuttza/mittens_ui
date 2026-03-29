@@ -29,4 +29,8 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency("gtk3")
 
   spec.add_development_dependency("yard")
+  spec.add_development_dependency("redcarpet")
+  spec.add_development_dependency("rdoc")
+  spec.add_development_dependency("webrick")
+  spec.add_development_dependency("rack")
 end
