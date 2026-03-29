@@ -17,6 +17,7 @@ require "mittens_ui/file_picker"
 require "mittens_ui/file_menu"
 require "mittens_ui/hbox"
 require "mittens_ui/notify"
+require "mittens_ui/store"
 require "gtk3"
 
 module MittensUi
@@ -24,7 +25,7 @@ module MittensUi
 
   class Application
     class << self
-      attr_reader :gtk_app, :layout, :window
+      attr_reader :gtk_app, :layout, :window, :store, :app_id
 
       def Window(options = {}, &block)
         init_gtk_application(options, &block)
@@ -34,11 +35,15 @@ module MittensUi
         begin
           yield if block_given?
         rescue => _error
-          print("Exiting with: #{_error}")
+          puts("Exiting with: #{_error}")
           Kernel.exit(1)
         ensure
           gtk_app.quit if gtk_app
         end
+      end
+
+      def store
+        @store ||= Store.new(@app_id)
       end
 
       private
@@ -60,7 +65,8 @@ module MittensUi
 
         set_process_name(app_name)
 
-        @gtk_app = Gtk::Application.new("org.mittens_ui.#{app_name}", :flags_none)
+        @app_id = "org.mittens_ui.#{app_name}"
+        @gtk_app = Gtk::Application.new(@app_id, :flags_none)
 
         @gtk_app.signal_connect("activate") do |application|
           @window = Gtk::ApplicationWindow.new(application)

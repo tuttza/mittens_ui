@@ -9,6 +9,8 @@ app_options = {
 }.freeze
 
 MittensUi::Application.Window(app_options) do
+  puts MittensUi::Application.store.get(:last_selected_contact)
+
   file_menus = { "File": { sub_menus: ["Exit"] } }.freeze
   fm = MittensUi::FileMenu.new(file_menus)
 
@@ -57,6 +59,9 @@ MittensUi::Application.Window(app_options) do
       Address:     #{data[1]}
       Phone #:     #{data[2]}
     MSG
+
+    MittensUi::Application.store.set(:last_selected_contact, data[0])
+
     MittensUi::Alert.new(msg, title: "Contact Entry")
   end
 
