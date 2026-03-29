@@ -21,16 +21,76 @@ require "mittens_ui/store"
 require "gtk3"
 
 module MittensUi
+  # Base error class for all MittensUi errors.
   class Error < StandardError; end
 
+  # The main application class for MittensUi.
+  # Responsible for bootstrapping the GTK application, managing the window,
+  # layout, and providing access to shared application state like the
+  # persistent store.
+  #
+  # @example Basic application setup
+  #   MittensUi::Application.Window(name: "my_app", title: "My App", width: 400, height: 600) do
+  #     MittensUi::Label.new("Hello World!")
+  #     MittensUi::Button.new(title: "Click Me")
+  #   end
+  #
+  # @example Accessing the persistent store
+  #   MittensUi::Application.store.set(:theme, "dark")
+  #   MittensUi::Application.store.get(:theme)  # => "dark"
+  #
+  # @example Exiting the application
+  #   MittensUi::Application.exit { puts "Goodbye!" }
   class Application
     class << self
-      attr_reader :gtk_app, :layout, :window, :store, :app_id
+      # The underlying Gtk::Application instance.
+      # @return [Gtk::Application]
+      attr_reader :gtk_app
 
+      # The layout manager responsible for placing widgets in the window.
+      # @return [MittensUi::LayoutManager]
+      attr_reader :layout
+
+      # The main application window.
+      # @return [Gtk::ApplicationWindow]
+      attr_reader :window
+
+      # The GTK application ID in reverse-domain format.
+      # @return [String] e.g. "org.mittens_ui.my_app"
+      attr_reader :app_id
+
+      # Creates and runs the main application window.
+      # This is the entry point for every MittensUi application.
+      # The block is evaluated inside the GTK activate signal, so all
+      # widget creation should happen inside it.
+      #
+      # @param options [Hash] window configuration options
+      # @option options [String] :name ("mittens_ui_app") the app identifier,
+      #   used as the process name and store filename
+      # @option options [Integer] :width (400) the window width in pixels
+      # @option options [Integer] :height (600) the window height in pixels
+      # @option options [String] :title ("Mittens App") the window title
+      # @option options [Boolean] :can_resize (true) whether the window is resizable
+      # @option options [String] :icon path to a custom window icon file
+      # @yield [window] the GTK application window
+      # @yieldparam window [Gtk::ApplicationWindow] the main window instance
+      # @return [void]
+      # @example
+      #   MittensUi::Application.Window(name: "contacts", title: "Contacts", width: 570, height: 615) do
+      #     MittensUi::Label.new("Welcome!")
+      #   end
       def Window(options = {}, &block)
         init_gtk_application(options, &block)
       end
 
+      # Exits the application cleanly, optionally running a block before quitting.
+      # If the block raises an error, the application exits with code 1.
+      # Always quits the GTK application loop via {#gtk_app}.
+      #
+      # @yield optional block to run before exiting
+      # @return [void]
+      # @example
+      #   MittensUi::Application.exit { puts "Saving data..." }
       def exit(&block)
         begin
           yield if block_given?
@@ -42,18 +102,37 @@ module MittensUi
         end
       end
 
+      # Returns the persistent store for this application.
+      # The store is lazily initialized on first access and scoped
+      # to the application name.
+      #
+      # @return [MittensUi::Store] the application store
+      # @example
+      #   MittensUi::Application.store.set(:last_user, "John")
+      #   MittensUi::Application.store.get(:last_user)  # => "John"
       def store
         @store ||= Store.new(@app_id)
       end
 
       private
 
+      # Sets the OS process name to the given app name.
+      # Affects how the process appears in system tools like +top+ and +ps+.
+      #
+      # @param name [String] the process name to set
+      # @return [void]
       def set_process_name(name)
         Process.setproctitle(name)
         $PROGRAM_NAME = name
         $0 = name
       end
 
+      # Bootstraps the GTK application, sets up the window, layout manager,
+      # and scrollable container, then runs the GTK main loop.
+      #
+      # @param options [Hash] see {.Window} for options
+      # @yield [window] the GTK application window
+      # @return [void]
       def init_gtk_application(options, &block)
         app_name        = options[:name]       || "mittens_ui_app"
         height          = options[:height]     || 600
@@ -65,7 +144,7 @@ module MittensUi
 
         set_process_name(app_name)
 
-        @app_id = "org.mittens_ui.#{app_name}"
+        @app_id  = "org.mittens_ui.#{app_name}"
         @gtk_app = Gtk::Application.new(@app_id, :flags_none)
 
         @gtk_app.signal_connect("activate") do |application|
