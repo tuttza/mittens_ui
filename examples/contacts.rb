@@ -32,9 +32,9 @@ MittensUi::Application.Window(app_options) do
 
   MittensUi::Label.new("Add Contact:", top: 22)
  
-  name_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Name...",    defer_render: true)
-  addr_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Address...", defer_render: true)
-  phne_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Phone #...", defer_render: true)
+  name_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Name...")
+  addr_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Address...")
+  phne_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Phone #...")
   tb_list = [name_tb, addr_tb, phne_tb].freeze
 
   add_contact_button.click do |_b|
