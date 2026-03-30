@@ -45,10 +45,13 @@ MittensUi::Application.Window(app_options) do
     end
   end
 
-  remove_contact_button.click do |_btn|
+  remove_contact_button.click do |btn|
     removed = contacts_table.remove_selected
-    if removed.size > 0
-      MittensUi::Notify.new("#{removed[0]} was removed.", type: :info)
+    btn.loading do
+      sleep 3
+      if removed.size > 0
+        MittensUi::Notify.new("#{removed[0]} was removed.", type: :info)
+      end
     end
   end
 
