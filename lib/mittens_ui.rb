@@ -18,6 +18,7 @@ require "mittens_ui/file_menu"
 require "mittens_ui/hbox"
 require "mittens_ui/notify"
 require "mittens_ui/store"
+require "mittens_ui/radiobutton"
 require "gtk3"
 
 module MittensUi

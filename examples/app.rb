@@ -17,6 +17,17 @@ MittensUi::Application.Window(app_options) do
     title: "Demo App", 
     position: :center
   )
+  
+
+  rb = MittensUi::RadioButton.new(
+    options: ["Red", "Green", "Blue"],
+    layout: :vertical,
+    default: "Red"
+  )
+
+  rb.on_change do |value|
+    puts "Selected: #{value}"
+  end
 
 
   MittensUi::Label.new("Enter Name:", top: 30)
@@ -29,6 +40,7 @@ MittensUi::Application.Window(app_options) do
     search_placeholder_text: "Search Items..."
   }.freeze
   listbox = MittensUi::Listbox.new(listbox_options)
+
   
   btn = MittensUi::Button.new(title: "Click Here")
   btn.click {|_b| MittensUi::Alert.new("Hello #{text_box.text} AND! #{listbox.selected_value} was selected.") }
@@ -36,6 +48,7 @@ MittensUi::Application.Window(app_options) do
   s = MittensUi::Slider.new({ start_value: 1, stop_value: 100, initial_value: 30 })
   s.slide { |s| puts s.value }
   
+
   img_opts = {
     tooltip_text: "The Gnome LOGO!",
     width: 200,
