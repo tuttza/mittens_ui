@@ -26,9 +26,14 @@ MittensUi::Application.Window(app_options) do
       ["Bobby Jones",    "434 bfef ave.", "442-333-1342"],
       ["Sara Akigawa",   "777 tyo ave.", "932-333-1325"],
     ],
+    editable_columns: [0, 1, 2],
     top: 5
   }
   contacts_table = MittensUi::TableView.new(table_view_config)
+
+  contacts_table.cell_edited do |row, col, value|
+    puts "Row #{row}, col #{col} changed to: #{value}"
+  end
 
   MittensUi::Label.new("Add Contact:", top: 22)
  
