@@ -26,6 +26,11 @@ GEM
       gdk_pixbuf2 (= 4.3.5)
       pango (= 4.3.5)
       rake
+    gdk4 (4.3.5)
+      cairo-gobject (= 4.3.5)
+      gdk_pixbuf2 (= 4.3.5)
+      pango (= 4.3.5)
+      rake
     gdk_pixbuf2 (4.3.5)
       gio2 (= 4.3.5)
       rake
@@ -37,9 +42,18 @@ GEM
       pkg-config (>= 1.3.5)
     gobject-introspection (4.3.5)
       glib2 (= 4.3.5)
+    graphene1 (4.3.5)
+      gobject-introspection (= 4.3.5)
+    gsk4 (4.3.5)
+      gdk4 (= 4.3.5)
+      graphene1 (= 4.3.5)
     gtk3 (4.3.5)
       atk (= 4.3.5)
       gdk3 (= 4.3.5)
+    gtk4 (4.3.5)
+      atk (= 4.3.5)
+      gdk4 (= 4.3.5)
+      gsk4 (= 4.3.5)
     json (2.19.3)
     matrix (0.4.3)
     native-package-installer (1.1.9)
@@ -85,7 +99,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  gtk3
+  gtk4
   mittens_ui!
   rack
   rake (~> 12.0)
@@ -105,11 +119,15 @@ CHECKSUMS
   erb (6.0.2) sha256=9fe6264d44f79422c87490a1558479bd0e7dad4dd0e317656e67ea3077b5242b
   fiddle (1.1.8) sha256=7fa8ee3627271497f3add5503acdbc3f40b32f610fc1cf49634f083ef3f32eee
   gdk3 (4.3.5) sha256=27f782c96087d080289e015c2b9d2f651d36df068c3e9dcd7cd43a03a7bc882a
+  gdk4 (4.3.5) sha256=a59135c6ce3e9e0c48d4685a77f225194adf84a0ffc1019dda1ab9a2bf6fd155
   gdk_pixbuf2 (4.3.5) sha256=eb2255ceeacc476ee9697ca0d0377f06149e9e4b8c389d9139b508f5b51ea662
   gio2 (4.3.5) sha256=83d575cb78aae746ee916f3b3ac09edba195ec2023a8cca3a309934e7fb420cf
   glib2 (4.3.5) sha256=f5f2a0c012271c75ee552bfd86c2535331e2ae642390cd2fa3e3a94bfd275115
   gobject-introspection (4.3.5) sha256=ed6e8d43cb17b68c2900a0245fc1562f21623c724e4be6e3237dd43265e0bfed
+  graphene1 (4.3.5) sha256=a89fbea9bd217dba9a91a388806a3bac2e71e291a0e1ff4896e3346848ad9538
+  gsk4 (4.3.5) sha256=80cfa35b32c18c830ca785422c422fb01294edd91ba0f367b19272f5b070703b
   gtk3 (4.3.5) sha256=0f7e2596544cdd024d557d2b51b7098e5ae8f815cbec22977e819c9f32508d99
+  gtk4 (4.3.5) sha256=8e9861f91ec7a9e9b97d4cf01c099b44a090fe8b145aaefcbd67dd28ddd47846
   json (2.19.3) sha256=289b0bb53052a1fa8c34ab33cc750b659ba14a5c45f3fcf4b18762dc67c78646
   matrix (0.4.3) sha256=a0d5ab7ddcc1973ff690ab361b67f359acbb16958d1dc072b8b956a286564c5b
   mittens_ui (0.0.12)
