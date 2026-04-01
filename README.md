@@ -76,7 +76,7 @@ Two `:half` widgets in a row sit side by side automatically. A `:full` widget al
 
 ### Horizontal Rows
 
-Use `HBox` to place widgets side by side. The block style is the cleanest approach:
+Use `HBox` to place widgets side by side.
 ```ruby
 MittensUi::HBox.new(spacing: 8) do
   MittensUi::Label.new("Name:")
