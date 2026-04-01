@@ -107,7 +107,12 @@ module MittensUi
     #
     # @return [void]
     def render
-      MittensUi::Application.layout.add(@core_widget, width: @width)
+      container = MittensUi::Application.current_container
+      if container
+        container.attach_widget(@core_widget)
+      else
+        MittensUi::Application.layout.add(@core_widget, width: @width)
+      end
     end
   end
 end

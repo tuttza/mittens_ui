@@ -36,7 +36,7 @@ MittensUi::Application.Window(app_options) do
   end
 
   MittensUi::Label.new("Add Contact:", top: 22)
- 
+
   name_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Name...")
   addr_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Address...")
   phne_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Phone #...")
@@ -71,6 +71,15 @@ MittensUi::Application.Window(app_options) do
     MittensUi::Application.store.set(:last_selected_contact, data[0])
 
     MittensUi::Alert.new(msg, title: "Contact Entry")
+  end
+
+  MittensUi::HBox.new(spacing: 8) do
+    MittensUi::Label.new("Outer left")
+    MittensUi::HBox.new(spacing: 4) do          # pushes inner HBox
+      MittensUi::Button.new(title: "Inner A")    # goes into inner HBox
+      MittensUi::Button.new(title: "Inner B")    # goes into inner HBox
+    end                                          # pops inner HBox
+    MittensUi::Label.new("Outer right")         # goes back into outer HBox
   end
 
   fm.exit do |_fm|

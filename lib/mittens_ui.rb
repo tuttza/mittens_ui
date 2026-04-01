@@ -60,6 +60,47 @@ module MittensUi
       # @return [String] e.g. "org.mittens_ui.my_app"
       attr_reader :app_id
 
+      # Pushes a container onto the container stack, making it the active
+      # container for widget rendering. Any widgets created after this call
+      # will render into this container instead of the main layout grid.
+      # Used internally by {MittensUi::HBox} to support block-style widget creation
+      # and nested HBox instances.
+      #
+      # @param container [MittensUi::HBox] the container to push onto the stack
+      # @return [Array] the updated container stack
+      # @see pop_container
+      # @see current_container
+      def push_container(container)
+        @container_stack ||= []
+        @container_stack.push(container)
+      end
+
+      # Pops the most recently pushed container off the stack, restoring
+      # the previous container (or the main layout if the stack is empty)
+      # as the active render target. Called automatically by {MittensUi::HBox}
+      # after its block finishes evaluating.
+      #
+      # @return [MittensUi::HBox, nil] the container that was removed, or nil if stack was empty
+      # @see push_container
+      # @see current_container
+      def pop_container
+        @container_stack ||= []
+        @container_stack.pop
+      end
+
+      # Returns the currently active container, or nil if no container is active.
+      # When non-nil, {MittensUi::Core#render} will add newly created widgets
+      # to this container instead of the main layout grid.
+      # Supports nested {MittensUi::HBox} instances by always returning
+      # the innermost active container.
+      #
+      # @return [MittensUi::HBox, nil] the current active container, or nil
+      # @see push_container
+      # @see pop_container
+      def current_container
+        @container_stack&.last
+      end
+
       # Creates and runs the main application window.
       # This is the entry point for every MittensUi application.
       # The block is evaluated inside the GTK activate signal, so all

@@ -13,6 +13,11 @@ MittensUi requires GTK3 native libraries to be installed on your system.
 sudo apt install build-essential libgtk-3-dev libcairo2-dev
 ```
 
+**macOS**
+```bash
+brew install gtk+3 cairo pkg-config
+```
+
 ## Installation
 
 Add to your Gemfile:
@@ -72,11 +77,11 @@ MittensUi::Label.new("Third width",   width: :third)   # 4 units
 MittensUi::Label.new("Quarter width", width: :quarter) # 3 units
 ```
 
-Two `:half` widgets in a row sit side by side automatically. A `:full` widget always gets its own row.
+Two `:half` widgets placed back to back sit side by side automatically. A `:full` widget always gets its own row.
 
 ### Horizontal Rows
 
-Use `HBox` to place widgets side by side.
+Use `HBox` to place widgets side by side in a row. The block style is recommended — no `defer_render` needed:
 ```ruby
 MittensUi::HBox.new(spacing: 8) do
   MittensUi::Label.new("Name:")
@@ -85,15 +90,27 @@ MittensUi::HBox.new(spacing: 8) do
 end
 ```
 
+`HBox` supports nesting:
+```ruby
+MittensUi::HBox.new(spacing: 8) do
+  MittensUi::Label.new("Left")
+  MittensUi::HBox.new(spacing: 4) do
+    MittensUi::Button.new(title: "A")
+    MittensUi::Button.new(title: "B")
+  end
+  MittensUi::Label.new("Right")
+end
+```
+
 ### Persistent Store
 
-MittensUi includes a built-in key-value store backed by JSON, saved to `~/.local/share/mittens_ui/<app_name>.json`.
+MittensUi includes a built-in key-value store backed by JSON, saved to `~/.local/share/mittens_ui/<app_name>.json`. Data persists across app launches automatically.
 ```ruby
 MittensUi::Application.store.set(:theme, "dark")
-MittensUi::Application.store.get(:theme)       # => "dark"
-MittensUi::Application.store.get(:missing, 42) # => 42 (default)
+MittensUi::Application.store.get(:theme)        # => "dark"
+MittensUi::Application.store.get(:missing, 42)  # => 42 (default)
 MittensUi::Application.store.delete(:theme)
-MittensUi::Application.store.all               # => { theme: "dark" }
+MittensUi::Application.store.all                # => { theme: "dark" }
 MittensUi::Application.store.clear
 ```
 
@@ -108,11 +125,14 @@ MittensUi::Label.new("Hello World", top: 10)
 ```ruby
 btn = MittensUi::Button.new(title: "Click Me")
 btn.click { puts "clicked!" }
+```
 
-# with loading state
+Buttons support a loading state that disables the button and shows a spinner while background work runs:
+```ruby
 btn.click do
   btn.loading do
-    sleep 2  # background work
+    sleep 2  # runs in background thread
+    puts "done!"
   end
 end
 ```
@@ -127,10 +147,10 @@ tb.clear
 # password field
 tb = MittensUi::Textbox.new(password: true)
 
-# multiline
+# multiline text area
 tb = MittensUi::Textbox.new(multiline: true, height: 120)
 
-# with autocomplete
+# with autocomplete suggestions
 tb = MittensUi::Textbox.new(can_edit: true)
 tb.enable_text_completion(["Ruby", "Rails", "Rack"])
 ```
@@ -143,24 +163,26 @@ cb.toggle { puts "toggled! value: #{cb.value}" }
 ```
 
 ### RadioButton
+
+A group of mutually exclusive options. Only one can be selected at a time.
 ```ruby
 rb = MittensUi::RadioButton.new(
   options: ["Small", "Medium", "Large"],
   default: "Medium",
-  layout:  :horizontal
+  layout:  :horizontal  # or :vertical
 )
-puts rb.selected  # => "Medium"
-rb.on_change { |value| puts "Selected: #{value}" }
-rb.select("Large")
+puts rb.selected               # => "Medium"
+rb.on_change { |v| puts v }   # fires on selection change
+rb.select("Large")             # programmatic selection
 ```
 
 ### Listbox
 ```ruby
-# basic
+# basic dropdown
 lb = MittensUi::Listbox.new(items: ["Ruby", "Python", "Elixir"])
 puts lb.selected_value
 
-# with search
+# with search box
 lb = MittensUi::Listbox.new(items: ["Ruby", "Python", "Elixir"], searchable: true)
 lb.update_items(["Go", "Rust", "Zig"])
 lb.clear_search
@@ -175,7 +197,7 @@ s.slide { |widget| puts widget.value }
 ### Switch
 ```ruby
 sw = MittensUi::Switch.new
-sw.on { puts "switched! status: #{sw.status}" }
+sw.on { puts "status: #{sw.status}" }
 puts sw.status  # => :on or :off
 ```
 
@@ -183,6 +205,9 @@ puts sw.status  # => :on or :off
 ```ruby
 img = MittensUi::Image.new("./assets/logo.png", width: 200, height: 200)
 img.click { puts "image clicked!" }
+
+# GIF support
+img = MittensUi::Image.new("./assets/animation.gif")
 ```
 
 ### TableView
@@ -193,8 +218,8 @@ table = MittensUi::TableView.new(
     ["John", "john@example.com"],
     ["Jane", "jane@example.com"]
   ],
-  editable: true          # make all cells editable
-  # editable_columns: [0] # or just specific columns
+  editable: true           # make all cells editable inline
+  # editable_columns: [0]  # or just specific column indices
 )
 
 table.add(["Bob", "bob@example.com"])
@@ -214,19 +239,23 @@ MittensUi::Alert.new("Something happened!", title: "Notice")
 
 ### Notify
 ```ruby
-MittensUi::Notify.new("Contact saved.", type: :info)  # :info, :error, :question
+MittensUi::Notify.new("Saved!", type: :info)      # banner notification
+# types: :info, :error, :question
 ```
 
 ### Loader
 ```ruby
 loader = MittensUi::Loader.new
-loader.start { sleep 3 }
+loader.start do
+  sleep 3  # runs in background thread
+end
 ```
 
 ### HeaderBar
 ```ruby
 btn = MittensUi::Button.new(title: "New", defer_render: true)
 MittensUi::HeaderBar.new([btn], title: "My App", position: :left)
+# position: :left or :right
 ```
 
 ### FileMenu
@@ -254,19 +283,29 @@ MittensUi::WebLink.new("GitHub", "https://github.com")
 
 ### Separator
 ```ruby
-MittensUi::Separator.new                                   # horizontal (default)
-MittensUi::Separator.new(:horizontal, top: 10, bottom: 10) # with margin
+MittensUi::Separator.new                                    # horizontal (default)
+MittensUi::Separator.new(:horizontal, top: 10, bottom: 10)  # with margin
 ```
 
 ### HBox
 ```ruby
-# block style — no defer_render needed
+# block style
 MittensUi::HBox.new(spacing: 8) do
   MittensUi::Button.new(title: "OK")
   MittensUi::Button.new(title: "Cancel")
 end
 
-# array style
+# nested HBox
+MittensUi::HBox.new(spacing: 8) do
+  MittensUi::Label.new("Tools:")
+  MittensUi::HBox.new(spacing: 4) do
+    MittensUi::Button.new(title: "Cut")
+    MittensUi::Button.new(title: "Copy")
+    MittensUi::Button.new(title: "Paste")
+  end
+end
+
+# array style — requires defer_render: true on each widget
 MittensUi::HBox.new([
   MittensUi::Button.new(title: "OK",     defer_render: true),
   MittensUi::Button.new(title: "Cancel", defer_render: true)
@@ -275,8 +314,7 @@ MittensUi::HBox.new([
 
 ## Full App Example
 
-These can be inside the `examples/` directory.
-
+See the `examples/` directory for more. Here's a complete contacts app:
 ```ruby
 require 'mittens_ui'
 
@@ -296,25 +334,34 @@ MittensUi::Application.Window(name: "contacts", title: "Contacts", width: 570, h
     ]
   )
 
+  MittensUi::Separator.new(:horizontal, top: 5, bottom: 5)
   MittensUi::Label.new("Add Contact", top: 20)
+
+  name_tb = nil
+  addr_tb = nil
+  phne_tb = nil
+
   MittensUi::HBox.new(spacing: 6) do
     name_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Name...")
     addr_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Address...")
     phne_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Phone #...")
-
-    add_btn.click do
-      table.add([name_tb.text, addr_tb.text, phne_tb.text])
-      [name_tb, addr_tb, phne_tb].each(&:clear)
-    end
   end
 
-  table.row_clicked do |data|
-    MittensUi::Alert.new("Name: #{data[0]}\nAddress: #{data[1]}")
+  add_btn.click do
+    table.add([name_tb.text, addr_tb.text, phne_tb.text])
+    [name_tb, addr_tb, phne_tb].each(&:clear)
   end
 
   remove_btn.click do
     removed = table.remove_selected
-    MittensUi::Notify.new("#{removed[0]} removed.", type: :info) if removed.any?
+    remove_btn.loading do
+      MittensUi::Notify.new("#{removed[0]} removed.", type: :info) if removed.any?
+    end
+  end
+
+  table.row_clicked do |data|
+    MittensUi::Application.store.set(:last_contact, data[0])
+    MittensUi::Alert.new("Name: #{data[0]}\nAddress: #{data[1]}\nPhone: #{data[2]}")
   end
 
   fm.exit { MittensUi::Application.exit }
@@ -323,8 +370,21 @@ end
 
 ## Development
 
-Clone the repo and install dependencies:
+**Linux**
 ```bash
+git clone https://github.com/tuttza/mittens_ui.git
+cd mittens_ui
+bundle install
+```
+
+**macOS**
+```bash
+brew install gtk+3 cairo pkg-config rbenv
+
+# setup and install Ruby if you have not done so:
+rbenv install 4.0.0
+rbenv global 4.0.0
+
 git clone https://github.com/tuttza/mittens_ui.git
 cd mittens_ui
 bundle install
