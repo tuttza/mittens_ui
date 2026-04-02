@@ -13,11 +13,16 @@ MittensUi::Application.Window(app_options) do
     [
       MittensUi::Button.new(title: "click it"),
       MittensUi::Checkbox.new(label: "check it")
-    ], 
-    title: "Demo App", 
+    ],
+    title: "Demo App",
     position: :center
   )
-  
+
+  MittensUi::Button.new(title: "Color Picker", width: :quarter).click do |b|
+    picker = MittensUi::ColorPicker.new
+    puts picker.hex
+    puts picker.rgb
+  end
 
   rb = MittensUi::RadioButton.new(
     options: ["Red", "Green", "Blue"],
@@ -29,25 +34,24 @@ MittensUi::Application.Window(app_options) do
     puts "Selected: #{value}"
   end
 
-
   MittensUi::Label.new("Enter Name:", top: 30)
   text_box = MittensUi::Textbox.new(can_edit: true)
-  
+
   listbox_options = {
-#    top: 10,
+    top: 10,
     items: ["item_1", "item_2", "item_3"],
     searchable: true,
     search_placeholder_text: "Search Items..."
   }.freeze
   listbox = MittensUi::Listbox.new(listbox_options)
 
-  
+
   btn = MittensUi::Button.new(title: "Click Here")
   btn.click {|_b| MittensUi::Alert.new("Hello #{text_box.text} AND! #{listbox.selected_value} was selected.") }
-  
+
   s = MittensUi::Slider.new({ start_value: 1, stop_value: 100, initial_value: 30 })
   s.slide { |s| puts s.value }
-  
+
 
   img_opts = {
     tooltip_text: "The Gnome LOGO!",
@@ -57,7 +61,7 @@ MittensUi::Application.Window(app_options) do
   }.freeze
   img = MittensUi::Image.new("./assets/gnome_logo.png", img_opts)
   switch = MittensUi::Switch.new(left: 220)
-  
+
   img.click do
     unless switch.hidden?
       switch.show
@@ -79,7 +83,7 @@ MittensUi::Application.Window(app_options) do
   cb.value = "Some Value"
   cb.toggle { puts "checkbox was toggled! associated value: #{cb.value}" }
   link = MittensUi::WebLink.new("YouTube", "https://www.youtube.com", left: 200)
-  
+
 
   open_file_picker = MittensUi::Button.new(title: "Choose File")
   open_file_picker.click do

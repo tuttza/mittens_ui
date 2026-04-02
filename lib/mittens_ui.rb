@@ -19,6 +19,7 @@ require "mittens_ui/hbox"
 require "mittens_ui/notify"
 require "mittens_ui/store"
 require "mittens_ui/radiobutton"
+require "mittens_ui/colorpicker"
 require "gtk3"
 
 module MittensUi

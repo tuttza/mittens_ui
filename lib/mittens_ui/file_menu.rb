@@ -17,7 +17,7 @@ module MittensUi
       super(@menu_bar, options)
     end
 
-    private 
+    private
 
     def create_menu_methods
       @raw_menu_items.each do |menu_label, menu_item|
@@ -31,7 +31,7 @@ module MittensUi
       end
     end
 
-    def associate_menu_items      
+    def associate_menu_items
       @menu_items.each do |root_menu_label, menu_item_data|
         root_menu  = Gtk::Menu.new
 
