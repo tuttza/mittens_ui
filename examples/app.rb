@@ -9,9 +9,21 @@ app_options = {
 }.freeze
 
 MittensUi::Application.Window(app_options) do
+
+  menus = {
+    "File": { sub_menus: ["New", "Open", :separator, "Exit"] },
+    "Edit": { sub_menus: ["Copy", "Paste", :separator, "Preferences"] }
+  }.freeze
+
+  fm = MittensUi::FileMenu.new(menus)
+  fm.new         { puts "New file" }
+  fm.open        { puts "Open file" }
+  fm.exit        { MittensUi::Application.exit }
+  fm.preferences { puts "Preferences" }
+
   MittensUi::HeaderBar.new(
     [
-      MittensUi::Button.new(title: "click it"),
+      MittensUi::Button.new(title: "click"),
       MittensUi::Checkbox.new(label: "check it")
     ],
     title: "Demo App",
