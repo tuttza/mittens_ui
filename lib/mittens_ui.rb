@@ -20,6 +20,7 @@ require "mittens_ui/notify"
 require "mittens_ui/store"
 require "mittens_ui/radiobutton"
 require "mittens_ui/colorpicker"
+require "mittens_ui/knob"
 require "gtk3"
 
 module MittensUi

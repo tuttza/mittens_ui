@@ -2,8 +2,6 @@
 
 A lightweight Ruby GUI toolkit built on top of GTK, inspired by Ruby Shoes. MittensUi wraps the complexity of GTK so you can build desktop apps with plain Ruby objects and a simple, natural API — no DSLs, no magic, just Ruby.
 
-![MittensUi Preview](https://github.com/tuttza/mittens_ui/blob/51e84d7c50282e3f2c856aa9e65fe3ed28b117ff/lib/mittens_ui/assets/mittens_ui_preview.gif)
-
 ## Requirements
 
 MittensUi requires GTK native libraries to be installed on your system.
