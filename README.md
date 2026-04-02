@@ -114,6 +114,36 @@ MittensUi::Application.store.clear
 
 ## Widget Reference
 
+### Knob
+
+A rotary knob widget inspired by synthesizer hardware. Click and drag up or right to increase the value, down or left to decrease it. Scroll wheel also works.
+```ruby
+knob = MittensUi::Knob.new(min: 0, max: 100, value: 50, label: "Volume")
+knob.on_change { |v| puts "Volume: #{v}" }
+
+# custom color and size
+knob = MittensUi::Knob.new(
+  min:   0,
+  max:   127,
+  value: 64,
+  size:  80,
+  label: "Cutoff",
+  color: [0.2, 0.6, 1.0]
+)
+
+# programmatic control
+knob.value = 75
+puts knob.value  # => 75.0
+
+# row of synth knobs
+MittensUi::HBox.new(spacing: 8) do
+  MittensUi::Knob.new(min: 0, max: 127, value: 64, label: "Cutoff",    color: [0.2, 0.6, 1.0])
+  MittensUi::Knob.new(min: 0, max: 127, value: 32, label: "Resonance", color: [1.0, 0.4, 0.2])
+  MittensUi::Knob.new(min: 0, max: 127, value: 80, label: "Attack",    color: [0.8, 0.8, 0.2])
+  MittensUi::Knob.new(min: 0, max: 127, value: 60, label: "Release",   color: [0.6, 0.2, 1.0])
+end
+```
+
 ### Label
 ```ruby
 MittensUi::Label.new("Hello World", top: 10)
