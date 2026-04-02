@@ -103,6 +103,44 @@ module MittensUi
         @container_stack&.last
       end
 
+      # Applies the theme based on the given mode.
+      # Respects the system preference when set to +:system+.
+      #
+      # @param theme [Symbol] +:dark+, +:light+, or +:system+
+      # @return [void]
+      def apply_theme(theme)
+        settings = Gtk::Settings.default
+        case theme
+        when :dark
+          settings.gtk_application_prefer_dark_theme = true
+        when :light
+          settings.gtk_application_prefer_dark_theme = false
+        when :system
+          # respect whatever the system/desktop environment has set
+          # GTK will use the system preference by default so we don't
+          # override it here
+          nil
+        end
+        @current_theme = theme
+      end
+
+      # Returns the current theme.
+      #
+      # @return [Symbol] +:dark+, +:light+, or +:system+
+      def current_theme
+        @current_theme || :system
+      end
+
+      # Toggles between dark and light mode at runtime.
+      #
+      # @return [void]
+      # @example
+      #   btn.click { MittensUi::Application.toggle_theme }
+      def toggle_theme
+        new_theme = current_theme == :dark ? :light : :dark
+        apply_theme(new_theme)
+      end
+
       # Creates and runs the main application window.
       # This is the entry point for every MittensUi application.
       # The block is evaluated inside the GTK activate signal, so all
@@ -182,6 +220,7 @@ module MittensUi
         height          = options[:height]     || 600
         width           = options[:width]      || 400
         title           = options[:title]      || "Mittens App"
+        theme           = options[:theme]      || :system
         can_resize      = options.fetch(:can_resize, true)
         app_assets_path = File.join(File.expand_path(File.dirname(__FILE__)), "mittens_ui", "assets") + "/"
         app_icon        = options[:icon] || app_assets_path + "icon.png"
@@ -192,6 +231,7 @@ module MittensUi
         @gtk_app = Gtk::Application.new(@app_id, :flags_none)
 
         @gtk_app.signal_connect("activate") do |application|
+          apply_theme(theme)
           @window = Gtk::ApplicationWindow.new(application)
           scrolled_window = Gtk::ScrolledWindow.new
           vertical_box = Gtk::Box.new(:vertical, 10)

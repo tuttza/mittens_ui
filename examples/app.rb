@@ -23,12 +23,14 @@ MittensUi::Application.Window(app_options) do
 
   MittensUi::HeaderBar.new(
     [
-      MittensUi::Button.new(title: "click"),
+      theme_btn = MittensUi::Button.new(title: "Toggle Theme"),
       MittensUi::Checkbox.new(label: "check it")
     ],
     title: "Demo App",
     position: :center
   )
+
+  theme_btn.click { MittensUi::Application.toggle_theme }
 
   MittensUi::Button.new(title: "Color Picker", width: :quarter).click do |b|
     picker = MittensUi::ColorPicker.new

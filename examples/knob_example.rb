@@ -5,7 +5,8 @@ app_options = {
   title: "Knob Example",
   height: 615,
   width: 570,
-  can_resize: true
+  can_resize: true,
+  theme: :dark
 }.freeze
 
 
