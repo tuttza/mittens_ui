@@ -1,6 +1,8 @@
 # MittensUi
 
-A lightweight Ruby GUI toolkit built on top of GTK, inspired by Ruby Shoes. MittensUi wraps the complexity of GTK so you can build desktop apps with plain Ruby objects and a simple, natural API — no DSLs, no magic, just Ruby. We will always try to keep up with the latest GTK updates.
+A lightweight Ruby GUI toolkit built on top of GTK, inspired by Ruby Shoes. MittensUi wraps the complexity of GTK so you can build desktop apps with plain Ruby objects and a simple, natural API — no DSLs, no magic, just Ruby.
+
+We will always try to keep up with the latest GTK updates.
 
 ## Requirements
 
@@ -8,12 +10,12 @@ MittensUi requires GTK native libraries to be installed on your system.
 
 **Ubuntu / Debian**
 ```bash
-sudo apt install build-essential libgtk-3-dev libcairo2-dev
+sudo apt install build-essential libgtk-4-dev libcairo2-dev
 ```
 
 **macOS**
 ```bash
-brew install gtk+3 cairo pkg-config
+brew install gtk+4 cairo pkg-config
 ```
 
 ## Installation
@@ -246,18 +248,22 @@ table = MittensUi::TableView.new(
     ["John", "john@example.com"],
     ["Jane", "jane@example.com"]
   ],
-  editable: true           # make all cells editable inline
-  # editable_columns: [0]  # or just specific column indices
 )
 
 table.add(["Bob", "bob@example.com"])
 table.add(["First", "first@example.com"], :prepend)
+
 table.remove_selected
+
 puts table.row_count
+
 puts table.selected_row.inspect
 
+# Single click on the row
 table.row_clicked { |row| puts row.inspect }
-table.cell_edited { |row, col, value| puts "#{row},#{col} => #{value}" }
+
+# Double click on the row
+table.row_double_clicked { |row| puts row.inspect }
 ```
 
 ### Alert
@@ -338,62 +344,6 @@ MittensUi::HBox.new([
   MittensUi::Button.new(title: "OK",     defer_render: true),
   MittensUi::Button.new(title: "Cancel", defer_render: true)
 ])
-```
-
-## Full App Example
-
-See the `examples/` directory for more. Here's a complete contacts app:
-```ruby
-require 'mittens_ui'
-
-MittensUi::Application.Window(name: "contacts", title: "Contacts", width: 570, height: 615) do
-  file_menus = { "File": { sub_menus: ["Exit"] } }.freeze
-  fm = MittensUi::FileMenu.new(file_menus)
-
-  add_btn    = MittensUi::Button.new(title: "Add",    icon: :add_green,  defer_render: true)
-  remove_btn = MittensUi::Button.new(title: "Remove", icon: :remove_red, defer_render: true)
-  MittensUi::HeaderBar.new([add_btn, remove_btn], title: "Contacts", position: :left)
-
-  table = MittensUi::TableView.new(
-    headers: ["Name", "Address", "Phone #"],
-    data: [
-      ["John Appleseed", "123 abc st.", "111-555-3333"],
-      ["Jane Doe",       "122 abc st.", "111-555-4444"],
-    ]
-  )
-
-  MittensUi::Separator.new(:horizontal, top: 5, bottom: 5)
-  MittensUi::Label.new("Add Contact", top: 20)
-
-  name_tb = nil
-  addr_tb = nil
-  phne_tb = nil
-
-  MittensUi::HBox.new(spacing: 6) do
-    name_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Name...")
-    addr_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Address...")
-    phne_tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Phone #...")
-  end
-
-  add_btn.click do
-    table.add([name_tb.text, addr_tb.text, phne_tb.text])
-    [name_tb, addr_tb, phne_tb].each(&:clear)
-  end
-
-  remove_btn.click do
-    removed = table.remove_selected
-    remove_btn.loading do
-      MittensUi::Notify.new("#{removed[0]} removed.", type: :info) if removed.any?
-    end
-  end
-
-  table.row_clicked do |data|
-    MittensUi::Application.store.set(:last_contact, data[0])
-    MittensUi::Alert.new("Name: #{data[0]}\nAddress: #{data[1]}\nPhone: #{data[2]}")
-  end
-
-  fm.exit { MittensUi::Application.exit }
-end
 ```
 
 ## Development
