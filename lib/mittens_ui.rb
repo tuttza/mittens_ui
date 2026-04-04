@@ -1,27 +1,31 @@
-require "mittens_ui/version"
-require "mittens_ui/layout_manager"
-require "mittens_ui/alert"
-require "mittens_ui/label"
-require "mittens_ui/button"
-require "mittens_ui/textbox"
-require "mittens_ui/listbox"
-require "mittens_ui/slider"
-require "mittens_ui/switch"
-require "mittens_ui/image"
-require "mittens_ui/checkbox"
-require "mittens_ui/web_link"
-require "mittens_ui/table_view"
-require "mittens_ui/loader"
-require "mittens_ui/header_bar"
-require "mittens_ui/file_picker"
-require "mittens_ui/file_menu"
-require "mittens_ui/hbox"
-require "mittens_ui/notify"
-require "mittens_ui/store"
-require "mittens_ui/radiobutton"
-require "mittens_ui/colorpicker"
-require "mittens_ui/knob"
-require "gtk3"
+# frozen_string_literal: true
+
+require 'mittens_ui/version'
+require 'mittens_ui/layout_manager'
+require 'mittens_ui/alert'
+require 'mittens_ui/label'
+require 'mittens_ui/button'
+require 'mittens_ui/textbox'
+require 'mittens_ui/listbox'
+require 'mittens_ui/slider'
+require 'mittens_ui/switch'
+require 'mittens_ui/image'
+require 'mittens_ui/checkbox'
+require 'mittens_ui/web_link'
+require 'mittens_ui/table_view'
+require 'mittens_ui/loader'
+require 'mittens_ui/header_bar'
+require 'mittens_ui/file_picker'
+require 'mittens_ui/file_menu'
+require 'mittens_ui/hbox'
+require 'mittens_ui/notify'
+require 'mittens_ui/store'
+require 'mittens_ui/radiobutton'
+require 'mittens_ui/colorpicker'
+require 'mittens_ui/knob'
+require 'mittens_ui/separator'
+
+require 'gtk4'
 
 module MittensUi
   # Base error class for all MittensUi errors.
@@ -114,14 +118,21 @@ module MittensUi
         when :dark
           settings.gtk_application_prefer_dark_theme = true
         when :light
-          settings.gtk_application_prefer_dark_theme = false
+          begin
+            settings.reset_property('gtk-application-prefer-dark-theme')
+            settings.gtk_application_prefer_dark_theme = false
+          rescue
+            settings.gtk_application_prefer_dark_theme = false
+          end
         when :system
-          # respect whatever the system/desktop environment has set
-          # GTK will use the system preference by default so we don't
-          # override it here
-          nil
+          begin
+            settings.reset_property('gtk-application-prefer-dark-theme')
+          rescue
+            settings.gtk_application_prefer_dark_theme = false
+          end
         end
         @current_theme = theme
+        @window&.queue_draw
       end
 
       # Returns the current theme.
@@ -175,12 +186,12 @@ module MittensUi
       #   MittensUi::Application.exit { puts "Saving data..." }
       def exit(&block)
         begin
-          yield if block_given?
-        rescue => _error
-          puts("Exiting with: #{_error}")
+          block.call if block_given?
+        rescue => e
+          puts("Exiting with: #{e}")
           Kernel.exit(1)
         ensure
-          gtk_app.quit if gtk_app
+          gtk_app&.quit
         end
       end
 
@@ -216,34 +227,34 @@ module MittensUi
       # @yield [window] the GTK application window
       # @return [void]
       def init_gtk_application(options, &block)
-        app_name        = options[:name]       || "mittens_ui_app"
+        app_name        = options[:name]       || 'mittens_ui_app'
         height          = options[:height]     || 600
         width           = options[:width]      || 400
-        title           = options[:title]      || "Mittens App"
-        theme           = options[:theme]      || :system
+        title           = options[:title]      || 'Mittens App'
         can_resize      = options.fetch(:can_resize, true)
-        app_assets_path = File.join(File.expand_path(File.dirname(__FILE__)), "mittens_ui", "assets") + "/"
-        app_icon        = options[:icon] || app_assets_path + "icon.png"
+        theme           = options.fetch(:theme, :system)
+        app_assets_path = File.join(__dir__, 'mittens_ui', 'assets')
+        app_icon        = options.fetch(:icon, "#{app_assets_path}/icon.png")
 
         set_process_name(app_name)
 
         @app_id  = "org.mittens_ui.#{app_name}"
         @gtk_app = Gtk::Application.new(@app_id, :flags_none)
 
-        @gtk_app.signal_connect("activate") do |application|
+        @gtk_app.signal_connect('activate') do |application|
           apply_theme(theme)
           @window = Gtk::ApplicationWindow.new(application)
+          @window.set_icon_name(app_icon)
           scrolled_window = Gtk::ScrolledWindow.new
           vertical_box = Gtk::Box.new(:vertical, 10)
           @layout = LayoutManager.new(vertical_box)
-          scrolled_window.add(vertical_box)
-          @window.add(scrolled_window)
+          scrolled_window.set_child(vertical_box)
+          @window.set_child(scrolled_window)
           yield(@window)
-          @window.set_size_request(width, height)
+          @window.set_default_size(width, height)
           @window.set_title(title)
-          @window.set_resizable(can_resize)
-          @window.set_icon_from_file(app_icon)
-          @window.show_all
+          @window.resizable = can_resize
+          @window.present
         end
 
         @gtk_app.run

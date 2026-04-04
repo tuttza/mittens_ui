@@ -1,9 +1,13 @@
-require_relative "./core"
+# frozen_string_literal: true
+
+require 'mittens_ui/core'
 
 module MittensUi
-  # A menu bar widget that renders a GTK menu bar with dropdown menus.
+  # A menu bar widget that renders a GTK4 popover menu bar with dropdown menus.
   # Menu items are defined as a nested hash and automatically become
   # callable methods on the FileMenu instance.
+  # Wraps {https://docs.gtk.org/gtk4/class.PopoverMenuBar.html Gtk::PopoverMenuBar}
+  # backed by {https://docs.gtk.org/gio/class.Menu.html Gio::Menu}.
   #
   # @example Basic usage
   #   menus = {
@@ -39,11 +43,13 @@ module MittensUi
     # @option options [Boolean] :defer_render (false) skip auto-rendering into layout
     def initialize(menu_items, options = {})
       @menu_items     = menu_items
-      @menu_bar       = Gtk::MenuBar.new
-      @raw_menu_items = {}
+      @raw_actions    = {}
       @handlers       = {}
+      @action_group   = Gio::SimpleActionGroup.new
 
-      associate_menu_items
+      @gio_menu = build_gio_menu
+      @menu_bar = Gtk::PopoverMenuBar.new(@gio_menu)
+
       create_menu_methods
 
       super(@menu_bar, options)
@@ -51,88 +57,92 @@ module MittensUi
 
     private
 
+    # Builds the Gio::Menu model from the menu items hash.
+    #
+    # @return [Gio::Menu] the complete menu model
+    def build_gio_menu
+      menu_model = Gio::Menu.new
+
+      @menu_items.each do |root_label, menu_item_data|
+        submenu = Gio::Menu.new
+        next unless menu_item_data.is_a?(Hash)
+
+        menu_item_data.each do |key, items|
+          next unless key.to_sym == :sub_menus
+
+          section = Gio::Menu.new
+
+          items.each do |item|
+            case item
+            when :separator
+              # append current section and start a new one
+              submenu.append_section(nil, section)
+              section = Gio::Menu.new
+            when String
+              action_name = item.downcase.gsub(/ /, '_')
+              section.append(item, "filemenu.#{action_name}")
+              @raw_actions[action_name] = item
+            when Hash
+              item.each do |sub_label, sub_items|
+                nested = build_nested_menu(sub_label.to_s, sub_items)
+                section.append_submenu(sub_label.to_s, nested)
+              end
+            end
+          end
+
+          submenu.append_section(nil, section)
+        end
+
+        menu_model.append_submenu(root_label.to_s, submenu)
+      end
+
+      menu_model
+    end
+
+    # Builds a nested Gio::Menu from a label and array of items.
+    #
+    # @param _label [String] the submenu label
+    # @param items [Array] the submenu items
+    # @return [Gio::Menu]
+    def build_nested_menu(_label, items)
+      menu = Gio::Menu.new
+      return menu unless items.is_a?(Array)
+
+      items.each do |item|
+        if item == :separator
+          # nested separators not commonly needed but supported
+        elsif item.is_a?(String)
+          action_name = item.downcase.gsub(/ /, '_')
+          menu.append(item, "filemenu.#{action_name}")
+          @raw_actions[action_name] = item
+        end
+      end
+
+      menu
+    end
+
     # Dynamically defines a method for each menu item so they can be
     # connected to blocks. Each method can only be connected once —
     # subsequent calls to the same method are no-ops.
+    # Uses Gio::SimpleAction under the hood.
     #
     # @return [void]
     def create_menu_methods
-      @raw_menu_items.each do |menu_label, menu_item|
-        method_name = menu_label.downcase.gsub(/ /, "_").to_sym
-        define_singleton_method(method_name) do |&blk|
-          return if @handlers[method_name]
-          @handlers[method_name] = menu_item.signal_connect("activate") do
+      @raw_actions.each_key do |action_name|
+        action = Gio::SimpleAction.new(action_name)
+        @action_group.add_action(action)
+
+        define_singleton_method(action_name.to_sym) do |&blk|
+          return if @handlers[action_name]
+
+          @handlers[action_name] = action.signal_connect('activate') do
             blk.call(self)
           end
         end
       end
-    end
 
-    # Builds the menu bar structure from the menu items hash.
-    #
-    # @return [void]
-    def associate_menu_items
-      @menu_items.each do |root_menu_label, menu_item_data|
-        root_menu      = Gtk::Menu.new
-        root_menu_item = Gtk::MenuItem.new(label: root_menu_label.to_s)
-        root_menu_item.set_submenu(root_menu)
-
-        next unless menu_item_data.is_a?(Hash)
-
-        menu_item_data.each do |sub_menus_key, sub_menus_item_data|
-          next unless sub_menus_key.to_sym == :sub_menus
-
-          sub_menus_item_data.each do |sub_menu_data|
-            case sub_menu_data
-            when :separator
-              root_menu.append(Gtk::SeparatorMenuItem.new)
-            when String
-              create_root_menu(sub_menu_data, root_menu)
-            when Hash
-              create_sub_menu(sub_menu_data, root_menu)
-            end
-          end
-        end
-
-        @menu_bar.append(root_menu_item)
-      end
-    end
-
-    # Creates a nested submenu from a hash.
-    #
-    # @param hsh [Hash] the submenu definition
-    # @param root_menu [Gtk::Menu] the parent menu to attach to
-    # @return [void]
-    def create_sub_menu(hsh, root_menu)
-      hsh.each do |sub_menu_label, sub_menu_data|
-        sub_menu      = Gtk::Menu.new
-        sub_menu_item = Gtk::MenuItem.new(label: sub_menu_label.to_s)
-        sub_menu_item.set_submenu(sub_menu)
-        root_menu.append(sub_menu_item)
-
-        if sub_menu_data.is_a?(Array)
-          sub_menu_data.each do |label|
-            if label == :separator
-              sub_menu.append(Gtk::SeparatorMenuItem.new)
-            else
-              nested_sub_item = Gtk::MenuItem.new(label: label.to_s)
-              sub_menu.append(nested_sub_item)
-              @raw_menu_items[label.to_s] = nested_sub_item
-            end
-          end
-        end
-      end
-    end
-
-    # Creates a single root-level menu item.
-    #
-    # @param label [String] the menu item label
-    # @param root_menu [Gtk::Menu] the parent menu to attach to
-    # @return [void]
-    def create_root_menu(label, root_menu)
-      menu_item = Gtk::MenuItem.new(label: label)
-      root_menu.append(menu_item)
-      @raw_menu_items[label] = menu_item
+      # insert action group into the widget so GTK can find it
+      @menu_bar.insert_action_group('filemenu', @action_group)
     end
   end
 end

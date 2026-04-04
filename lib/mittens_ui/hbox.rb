@@ -1,9 +1,11 @@
-require_relative "./core"
-require "mittens_ui/helpers"
+# frozen_string_literal: true
+
+require 'mittens_ui/core'
+require 'mittens_ui/helpers'
 
 module MittensUi
   # A horizontal layout container that places widgets side by side in a row.
-  # Wraps {https://docs.gtk.org/gtk3/class.Box.html Gtk::Box} with +:horizontal+ orientation.
+  # Wraps {https://docs.gtk.org/gtk4/class.Box.html Gtk::Box} with +:horizontal+ orientation.
   # Supports nesting — HBox instances can be placed inside other HBox instances.
   #
   # @example Block style
@@ -83,6 +85,7 @@ module MittensUi
     # @return [void]
     def remove
       return if @box.nil?
+
       MittensUi::Application.layout.remove(@box)
     end
 
@@ -97,10 +100,17 @@ module MittensUi
     # @param padding [Integer] padding in pixels around the widget
     # @return [void]
     def attach(widget, position: :start, expand: true, fill: true, padding: 0)
-      opts = { expand: expand, fill: fill, padding: padding }
       case position
-      when :end then @box.pack_end(widget, opts)
-      else           @box.pack_start(widget, opts)
+      when :end
+        @box.append(widget)
+        widget.hexpand = expand
+        widget.vexpand = false
+        widget.hexpand_set = true
+      else
+        @box.prepend(widget)
+        widget.hexpand = expand
+        widget.vexpand = false
+        widget.hexpand_set = true
       end
     end
   end

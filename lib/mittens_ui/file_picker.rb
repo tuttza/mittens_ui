@@ -1,27 +1,58 @@
-require_relative "./core"
+# frozen_string_literal: true
+
+require 'mittens_ui/core'
 
 module MittensUi
+  # A file picker dialog that allows the user to select a file.
+  # Wraps {https://docs.gtk.org/gtk4/class.FileDialog.html Gtk::FileDialog}.
+  # Opens immediately on instantiation. The selected path is accessible
+  # via {#path} after the dialog closes.
+  #
+  # @example Basic usage
+  #   picker = MittensUi::FilePicker.new
+  #   puts picker.path  # => "/home/user/file.txt" or nil if cancelled
+  #
+  # @example With block
+  #   MittensUi::FilePicker.new do |path|
+  #     puts "Selected: #{path}" if path
+  #   end
   class FilePicker
     attr_reader :path
 
-    def initialize(options = {})
+    # Creates a new FilePicker dialog and opens it immediately.
+    #
+    # @param options [Hash] configuration options
+    # @option options [String] :title ("Select File") the dialog title
+    # @yield [path] optional block called with the selected path, or nil if cancelled
+    # @yieldparam path [String, nil] the selected file path
+    def initialize(options = {}, &block)
       @path = nil
-      parent_window = MittensUi::Application.window
-      dialog_options = {
-        title: "Select File",
-        parent: parent_window,
-        action: options[:action] || :open,
-        buttons: [
-          [Gtk::Stock::OPEN, Gtk::ResponseType::ACCEPT],
-          [Gtk::Stock::CANCEL, Gtk::ResponseType::CANCEL]
-        ]
-      }.freeze
-      
-      @dialog = Gtk::FileChooserDialog.new(dialog_options)
-      if @dialog.run == :accept
-        @path = @dialog.filename
+      open_dialog(options, &block)
+    end
+
+    private
+
+    # Opens the file dialog using GTK4 Gtk::FileDialog.
+    #
+    # @param options [Hash] configuration options
+    # @return [void]
+    def open_dialog(options, &block)
+      parent = MittensUi::Application.window
+
+      dialog = Gtk::FileDialog.new
+      dialog.title = options.fetch(:title, 'Select File')
+      dialog.modal = true
+
+      dialog.open(parent, nil) do |_source, result|
+        begin
+          file  = dialog.open_finish(result)
+          @path = file.path if file
+        rescue
+          # user cancelled
+          @path = nil
+        end
+        block&.call(@path)
       end
-      @dialog.destroy
     end
   end
 end

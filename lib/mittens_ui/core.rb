@@ -1,4 +1,6 @@
-require "mittens_ui/helpers"
+# frozen_string_literal: true
+
+require 'mittens_ui/helpers'
 
 module MittensUi
   # Base class for all MittensUi widgets.
@@ -12,17 +14,17 @@ module MittensUi
   # @example Creating a custom widget that inherits from Core
   #   class MyWidget < MittensUi::Core
   #     def initialize(options = {})
-  #       @gtk_widget = Gtk::Label.new("Hello")
+  #       @gtk_widget = Gtk::Label.new('Hello')
   #       super(@gtk_widget, options)
   #     end
   #   end
   #
   # @example Controlling widget width
-  #   MittensUi::Label.new("Half width", width: :half)
-  #   MittensUi::Label.new("Full width", width: :full)
+  #   MittensUi::Label.new('Half width', width: :half)
+  #   MittensUi::Label.new('Full width', width: :full)
   #
   # @example Deferring render for container widgets like HeaderBar
-  #   MittensUi::Button.new(title: "Click", defer_render: true)
+  #   MittensUi::Button.new(title: 'Click', defer_render: true)
   class Core
     include Helpers
 
@@ -47,8 +49,8 @@ module MittensUi
     # @option options [Integer] :bottom bottom margin in pixels
     # @option options [Integer] :right right margin in pixels
     def initialize(widget, options = {})
-      @core_widget = widget
-      @width = options[:width] || :full
+      @core_widget  = widget
+      @width        = options[:width]        || :full
       @defer_render = options[:defer_render] || false
       set_margin_from_opts_for(@core_widget, options)
       render unless @defer_render
@@ -58,23 +60,23 @@ module MittensUi
     #
     # @return [void]
     # @example
-    #   btn = MittensUi::Button.new(title: "Click")
+    #   btn = MittensUi::Button.new(title: 'Click')
     #   btn.hide
     #   btn.show
     def show
-      @core_widget.show_all
+      # GTK4: show_all removed — use show instead
+      @core_widget.show
     end
 
     # Returns whether the widget is currently hidden.
     #
     # @return [Boolean] true if the widget is visible, false if hidden
-    # @note This delegates to GTK's +visible?+ method
     # @example
     #   btn.hidden?  # => false
     #   btn.hide
     #   btn.hidden?  # => true
     def hidden?
-      @core_widget.visible?
+      !@core_widget.visible?
     end
 
     # Hides the widget from view without removing it from the layout.
@@ -82,10 +84,11 @@ module MittensUi
     #
     # @return [void]
     # @example
-    #   btn = MittensUi::Button.new(title: "Click")
+    #   btn = MittensUi::Button.new(title: 'Click')
     #   btn.hide
     def hide
       return if @core_widget.nil?
+
       @core_widget.hide
     end
 
@@ -94,9 +97,11 @@ module MittensUi
     #
     # @return [void]
     # @example
-    #   btn = MittensUi::Button.new(title: "Click")
+    #   btn = MittensUi::Button.new(title: 'Click')
     #   btn.remove
     def remove
+      return if @defer_render
+
       MittensUi::Application.layout.remove(@core_widget)
     end
 

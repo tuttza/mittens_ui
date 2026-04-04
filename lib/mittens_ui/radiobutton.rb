@@ -1,29 +1,29 @@
-require_relative "./core"
+# frozen_string_literal: true
+
+require 'mittens_ui/core'
 
 module MittensUi
   # A group of mutually exclusive radio button options.
-  # Wraps {https://docs.gtk.org/gtk3/class.RadioButton.html Gtk::RadioButton}
-  # and manages grouping automatically so only one option can be selected at a time.
-  # The buttons are arranged horizontally by default, or vertically with +:vertical+ layout.
+  # Wraps {https://docs.gtk.org/gtk4/class.CheckButton.html Gtk::CheckButton}
+  # with group linking so only one option can be selected at a time.
+  # GTK4 removed Gtk::RadioButton — CheckButton with a group is the replacement.
   #
   # @example Basic radio button group
   #   rb = MittensUi::RadioButton.new(
-  #     options: ["Small", "Medium", "Large"],
-  #     default: "Medium"
+  #     options: ['Small', 'Medium', 'Large'],
+  #     default: 'Medium'
   #   )
   #   puts rb.selected  # => "Medium"
   #
   # @example Vertical layout
   #   rb = MittensUi::RadioButton.new(
-  #     options: ["Red", "Green", "Blue"],
+  #     options: ['Red', 'Green', 'Blue'],
   #     layout: :vertical
   #   )
   #
   # @example Reacting to selection change
-  #   rb = MittensUi::RadioButton.new(options: ["Yes", "No"])
-  #   rb.on_change do |value|
-  #     puts "Selected: #{value}"
-  #   end
+  #   rb = MittensUi::RadioButton.new(options: ['Yes', 'No'])
+  #   rb.on_change { |value| puts "Selected: #{value}" }
   class RadioButton < Core
 
     # Creates a new RadioButton group.
@@ -43,44 +43,33 @@ module MittensUi
       @on_change     = nil
       @buttons       = {}
 
-      raise ArgumentError, "RadioButton requires at least one option" if @option_labels.empty?
+      raise ArgumentError, 'RadioButton requires at least one option' if @option_labels.empty?
 
       @container = Gtk::Box.new(@layout, 8)
       init_buttons
-
       super(@container, options)
     end
 
     # Returns the currently selected option label.
     #
     # @return [String, nil] the selected option, or nil if none selected
-    # @example
-    #   rb.selected  # => "Medium"
     def selected
       @buttons.find { |_label, btn| btn.active? }&.first
     end
 
     # Programmatically selects an option by label.
-    # Has no effect if the label does not exist in the group.
     #
     # @param label [String] the option label to select
     # @return [void]
-    # @example
-    #   rb.select("Large")
     def select(label)
       @buttons[label]&.set_active(true)
     end
 
     # Connects a block to the selection change event.
-    # The block is called whenever the user selects a different option.
     #
     # @yield [value] called when the selected option changes
     # @yieldparam value [String] the newly selected option label
     # @return [void]
-    # @example
-    #   rb.on_change do |value|
-    #     puts "User selected: #{value}"
-    #   end
     def on_change(&block)
       @on_change = block
     end
@@ -94,32 +83,30 @@ module MittensUi
 
     private
 
-    # Initializes the Gtk::RadioButton widgets, groups them together,
-    # sets the default selection, and wires up change callbacks.
+    # Initializes the CheckButton widgets and links them into a group.
+    # GTK4 uses Gtk::CheckButton#group= instead of Gtk::RadioButton member.
     #
     # @return [void]
     def init_buttons
-      group = nil
+      first_button = nil
 
       @option_labels.each do |label|
-        btn = if group.nil?
-          Gtk::RadioButton.new(label: label)
-        else
-          Gtk::RadioButton.new(member: group, label: label)
-        end
+        btn = Gtk::CheckButton.new(label)
 
-        group ||= btn
+        if first_button.nil?
+          first_button = btn
+        else
+          btn.group = first_button
+        end
 
         btn.set_active(label == @default)
 
-        btn.signal_connect("toggled") do |b|
-          if b.active?
-            @on_change&.call(label)
-          end
+        btn.signal_connect('toggled') do |b|
+          @on_change&.call(label) if b.active?
         end
 
         @buttons[label] = btn
-        @container.pack_start(btn, expand: false, fill: false, padding: 0)
+        @container.append(btn)
       end
     end
   end

@@ -1,10 +1,12 @@
-require_relative "./core"
+# frozen_string_literal: true
+
+require 'mittens_ui/core'
 
 module MittensUi
   # A tabular data widget with sortable columns, row selection, and optional
-  # inline cell editing. Wraps {https://docs.gtk.org/gtk3/class.TreeView.html Gtk::TreeView}
-  # backed by a {https://docs.gtk.org/gtk3/class.ListStore.html Gtk::ListStore}
-  # inside a {https://docs.gtk.org/gtk3/class.ScrolledWindow.html Gtk::ScrolledWindow}.
+  # inline cell editing. Wraps {https://docs.gtk.org/gtk4/class.ColumnView.html Gtk::ColumnView}
+  # backed by a {https://docs.gtk.org/gtk4/class.StringList.html Gtk::StringList}
+  # inside a {https://docs.gtk.org/gtk4/class.ScrolledWindow.html Gtk::ScrolledWindow}.
   #
   # @example Basic table
   #   table = MittensUi::TableView.new(
@@ -35,31 +37,29 @@ module MittensUi
     #   each element is an array of strings representing a row
     # @option options [Boolean] :editable (false) when true, all cells are editable
     # @option options [Array<Integer>] :editable_columns ([]) list of column indices
-    #   that should be editable. Takes precedence over +:editable+ for fine-grained control.
+    #   that should be editable
     # @option options [Symbol] :width (:full) column width in the layout grid
     # @option options [Boolean] :defer_render (false) skip auto-rendering into layout
     def initialize(options = {})
-      headers          = options[:headers]          || []
-      data             = options[:data]             || []
-      @editable        = options[:editable]         || false
-      @editable_columns = options[:editable_columns] || []
+      @headers          = options.fetch(:headers, [])
+      @data             = options.fetch(:data, [])
+      @editable         = options.fetch(:editable, false)
+      @editable_columns = options.fetch(:editable_columns, [])
+      @on_cell_edited   = nil
+      @on_row_clicked   = nil
 
-      raise ArgumentError, "Invalid table data" unless is_data_valid?(headers, data)
+      raise ArgumentError, 'Invalid table data' unless data_valid?(@headers, @data)
 
-      init_column_headers(headers)
-      init_list_store
+      init_store
+      init_selection
+      init_column_view
+      init_columns
+      init_data_rows(@data)
 
       @scrolled_window = Gtk::ScrolledWindow.new
-      @scrolled_window.min_content_height = [data.size * 30, 300].min
+      @scrolled_window.min_content_height = [@data.size * 30, 300].min
+      @scrolled_window.set_child(@column_view)
 
-      @tree_view = Gtk::TreeView.new(@list_store)
-      @tree_view.selection.set_mode(:single)
-      @columns.each { |col| @tree_view.append_column(col) }
-
-      init_sortable_columns
-      init_data_rows(data)
-
-      @scrolled_window.add(@tree_view)
       super(@scrolled_window, options)
     end
 
@@ -70,103 +70,223 @@ module MittensUi
     # @return [void]
     # @example
     #   table.add(["Jane Doe", "jane@example.com"])
-    #   table.add(["First Row", "first@example.com"], :prepend)
+    #   table.add(["First", "first@example.com"], :prepend)
     def add(data, direction = :append)
-      return if data.size.zero?
-      iter = direction == :prepend ? @list_store.prepend : @list_store.append
-      data.each_with_index { |item, idx| iter[idx] = item }
+      return if data.empty?
+
+      encoded = encode_row(data)
+      if direction == :prepend
+        @store.splice(0, 0, [encoded])
+      else
+        @store.append(encoded)
+      end
     end
 
     # Clears all rows from the table.
     #
     # @return [void]
     def clear
-      @list_store.clear
+      @store.splice(0, @store.n_items, [])
     end
 
     # Returns the number of rows in the table.
     #
     # @return [Integer] the row count
     def row_count
-      @list_store.iter_n_children(nil)
+      @store.n_items
     end
 
     # Returns the currently selected row as an array of strings.
     #
-    # @return [Array<String>, nil] the selected row values, or nil if nothing is selected
+    # @return [Array<String>, nil] the selected row values or nil if nothing selected
     # @example
     #   table.selected_row  # => ["John", "john@example.com"]
     def selected_row
-      iter = @tree_view.selection.selected
-      return nil unless iter
-      @list_store.n_columns.times.map { |x| @list_store.get_value(iter, x) }
+      pos = @selection.selected
+
+      return nil if pos == Gtk::INVALID_LIST_POSITION
+
+      decode_row(@store.get_string(pos))
     end
 
     # Removes the currently selected row and returns its values.
     #
     # @return [Array<String>] the removed row values, or empty array if nothing selected
     def remove_selected
-      iter = @tree_view.selection.selected
-      return [] unless iter
+      pos = @selection.selected
+
+      return [] if pos == Gtk::INVALID_LIST_POSITION
+
       values = selected_row
-      @list_store.remove(iter)
+      @store.remove(pos)
       values
     end
 
-    # Connects a block to the row activation event (double-click or Enter key).
+    # Connects a block to the row activation event.
     #
     # @yield [values] called when a row is activated
     # @yieldparam values [Array<String>] the values of the activated row
     # @return [void]
     # @example
-    #   table.row_clicked do |row|
-    #     puts row.inspect
+    #   table.row_clicked { |row| puts row.inspect }
+    def row_clicked(&block)
+      @on_row_clicked = block
+    end
+
+    # Connects a block to the row activation event (double click/Enter)
+    def row_double_clicked(&block)
+      @on_row_double_clicked = block
+    end
+
+    # Returns true if a row is currently selected, false otherwise.
+    #
+    # @return [Boolean] true if a row is selected, false otherwise
+    #
+    # @example
+    #   if table.row_selected?
+    #     puts "A row is selected!"
+    #   else
+    #     puts "No row is selected."
     #   end
-    def row_clicked
-      @tree_view.signal_connect("row-activated") do |tv, _path, _column|
-        row    = tv.selection.selected
-        values = @list_store.n_columns.times.map { |x| row.get_value(x) if row }.compact
-        yield(values)
-      end
+    def row_selected?
+      @selection.selected != Gtk::INVALID_LIST_POSITION
     end
 
     # Connects a block to the cell edited event.
-    # Called whenever the user finishes editing a cell inline.
     #
     # @yield [row, col, new_value] called when a cell is edited
-    # @yieldparam row [Integer] the row index of the edited cell
-    # @yieldparam col [Integer] the column index of the edited cell
-    # @yieldparam new_value [String] the new value entered by the user
+    # @yieldparam row [Integer] the row index
+    # @yieldparam col [Integer] the column index
+    # @yieldparam new_value [String] the new value
     # @return [void]
     # @example
-    #   table.cell_edited do |row, col, value|
-    #     puts "Row #{row}, Col #{col} changed to: #{value}"
-    #   end
+    #   table.cell_edited { |row, col, value| puts "#{row},#{col} => #{value}" }
     def cell_edited(&block)
       @on_cell_edited = block
     end
 
     private
 
+    # Encodes a row array as a pipe-delimited string for storage in StringList.
+    #
+    # @param row [Array<String>] the row data
+    # @return [String] encoded row
+    def encode_row(row)
+      row.map { |v| v.to_s.gsub('|', '\\|') }.join('|')
+    end
+
+    # Decodes a pipe-delimited string back into a row array.
+    #
+    # @param str [String] the encoded row
+    # @return [Array<String>] the decoded row
+    def decode_row(str)
+      str.split(/(?<!\\)\|/).map { |v| v.gsub('\\|', '|') }
+    end
+
+    # Initializes the Gtk::StringList backing store.
+    # Each item encodes a full row as a pipe-delimited string.
+    #
+    # @return [void]
+    def init_store
+      @store = Gtk::StringList.new([])
+    end
+
+    # Initializes single selection model wrapping the store.
+    #
+    # @return [void]
+    def init_selection
+      @selection = Gtk::SingleSelection.new
+      @selection.model = @store
+
+      # Handle selection changes (single click)
+      @selection.signal_connect('selection-changed') do
+        pos = @selection.selected
+        next if pos == Gtk::INVALID_LIST_POSITION
+
+        decoded = decode_row(@store.get_string(pos))
+        @on_row_clicked&.call(decoded)
+      end
+    end
+
+    # Initializes the Gtk::ColumnView.
+    #
+    # @return [void]
+    def init_column_view
+      @column_view = Gtk::ColumnView.new(@selection)
+      @column_view.reorderable = true
+
+      # Handle row activation (double click/Enter)
+      @column_view.signal_connect('activate') do |_, pos|
+        next if pos == Gtk::INVALID_LIST_POSITION
+
+        decoded = decode_row(@store.get_string(pos))
+        @on_row_double_clicked&.call(decoded)
+      end
+    end
+
+    # Initializes columns for each header.
+    #
+    # @return [void]
+    def init_columns
+      @headers.each_with_index do |header, col_idx|
+        next unless header.is_a?(String)
+
+        factory = Gtk::SignalListItemFactory.new
+
+        factory.signal_connect('setup') do |_f, list_item|
+          label = Gtk::Label.new('')
+          label.xalign = 0
+          list_item.child = label
+        end
+
+        factory.signal_connect('bind') do |_f, list_item|
+          pos   = list_item.position
+          row   = decode_row(@store.get_string(pos))
+          value = row[col_idx] || ''
+          list_item.child.label = value
+        end
+
+        column = Gtk::ColumnViewColumn.new(header, factory)
+        column.resizable = true
+        column.expand    = true
+        @column_view.append_column(column)
+      end
+    end
+
+    # Populates the store with initial data rows.
+    #
+    # @param data [Array<Array<String>>] the data rows
+    # @return [void]
+    def init_data_rows(data)
+      data.each { |row| @store.append(encode_row(row)) }
+    end
+
     # Returns true if the given column index should be editable.
     #
     # @param col_index [Integer] the column index
     # @return [Boolean]
     def column_editable?(col_index)
-      @editable || @editable_columns.include?(col_index)
+      return false # TODO: I need to figure how make editable cells in GTK4
+
+      #@editable || @editable_columns.include?(col_index)
     end
 
+    # Validates that headers and data are correctly structured.
+    #
+    # @param headers [Array<String>] column headers
+    # @param data [Array<Array<String>>] table data
     # @return [Boolean]
-    def is_data_valid?(headers, data)
+    def data_valid?(headers, data)
       unless data.is_a?(Array) && headers.is_a?(Array)
-        puts "=====[MittensUi: Critical Error]====="
-        puts "headers and data must both be Arrays"
+        puts '=====[MittensUi: Critical Error]====='
+        puts 'headers and data must both be Arrays'
         return false
       end
+
       data.each_with_index do |row, idx|
         unless row.is_a?(Array) && row.size == headers.size
-          puts "=====[MittensUi: Critical Error]====="
-          puts "The length of your data(Row) must match the length of the headers."
+          puts '=====[MittensUi: Critical Error]====='
+          puts 'Row length must match header length.'
           puts "Failed at Row:  #{idx}"
           puts "Row Length:     #{row.size} elements"
           puts "Header Length:  #{headers.size} elements"
@@ -174,58 +294,6 @@ module MittensUi
         end
       end
       true
-    end
-
-    # @return [void]
-    def init_sortable_columns
-      @columns.each_with_index do |col, idx|
-        col.sort_indicator = true
-        col.sort_column_id = idx
-        col.signal_connect("clicked") do |w|
-          w.sort_order = w.sort_order == :ascending ? :descending : :ascending
-        end
-      end
-    end
-
-    # @return [void]
-    def init_list_store
-      types = Array.new(@columns.size, String)
-      @list_store = Gtk::ListStore.new(*types)
-    end
-
-    # @return [void]
-    def init_data_rows(data)
-      data.each do |items_arr|
-        iter = @list_store.append
-        items_arr.each_with_index { |item, idx| iter[idx] = item }
-      end
-    end
-
-    # Initializes column headers, using an editable CellRendererText for
-    # columns marked as editable, and a standard one for the rest.
-    #
-    # @param headers_list [Array<String>] the column header labels
-    # @return [void]
-    def init_column_headers(headers_list)
-      @columns = headers_list.each_with_index.filter_map do |h, i|
-        next unless h.is_a?(String)
-
-        renderer = Gtk::CellRendererText.new
-
-        if column_editable?(i)
-          renderer.editable = true
-          renderer.signal_connect("edited") do |_renderer, path, new_text|
-            iter = @list_store.get_iter(path)
-            if iter
-              iter[i] = new_text
-              row_index = path.to_s.to_i
-              @on_cell_edited&.call(row_index, i, new_text)
-            end
-          end
-        end
-
-        Gtk::TreeViewColumn.new(h, renderer, text: i)
-      end
     end
   end
 end

@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 module MittensUi
   module Helpers
     def icon_map
       {
-        add:    "list-add-symbolic",
-        remove: "list-remove-symbolic",
+        add:    'list-add-symbolic',
+        remove: 'list-remove-symbolic',
         add_green: 'add',
         remove_red: 'remove'
       }.freeze
@@ -20,22 +22,10 @@ module MittensUi
       margin_right  = options[:right].nil?  ? nil : options[:right]
       margin_left   = options[:left].nil?   ? nil : options[:left]
 
-      unless margin_top.nil?
-        widget.set_margin_top(margin_top)
-      end
-
-      unless margin_bottom.nil?
-        widget.set_margin_bottom(margin_bottom)
-      end
-
-      unless margin_left.nil?
-        widget.set_margin_left(margin_left)
-      end
-
-      unless margin_right.nil?
-        widget.set_margin_right(margin_right)
-      end
+      widget.set_margin_top(margin_top)       unless margin_top.nil?
+      widget.set_margin_bottom(margin_bottom) unless margin_bottom.nil?
+      widget.set_margin_start(margin_left)    unless margin_left.nil?
+      widget.set_margin_end(margin_right)     unless margin_right.nil?
     end
   end
 end
-

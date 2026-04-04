@@ -1,8 +1,10 @@
-require_relative "./core"
+# frozen_string_literal: true
+
+require 'mittens_ui/core'
 
 module MittensUi
   # A visual divider used to separate sections of a UI.
-  # Wraps {https://docs.gtk.org/gtk3/class.Separator.html Gtk::Separator}.
+  # Wraps {https://docs.gtk.org/gtk4/class.Separator.html Gtk::Separator}.
   # Vertical separators are automatically wrapped in a horizontal Gtk::Box
   # with a minimum height so they render correctly in any layout context.
   #
@@ -31,21 +33,30 @@ module MittensUi
     # @option options [Boolean] :defer_render (false) skip auto-rendering into layout
     def initialize(orientation = :horizontal, options = {})
       unless %i[horizontal vertical].include?(orientation)
-        raise ArgumentError, "orientation must be :horizontal or :vertical"
+        raise ArgumentError, 'orientation must be :horizontal or :vertical'
       end
 
-      @separator = Gtk::Separator.new(orientation)
+      gtk_orientation =
+        orientation == :horizontal ? Gtk::Orientation::HORIZONTAL : Gtk::Orientation::VERTICAL
+
+      @separator = Gtk::Separator.new(gtk_orientation)
 
       widget = if orientation == :vertical
-        height = options[:height] || 100
-        container = Gtk::Box.new(:horizontal, 0)
-        container.set_size_request(10, height)
-        @separator.set_size_request(2, height)
-        container.pack_start(@separator, expand: true, fill: true, padding: 1)
-        container
-      else
-        @separator
-      end
+          height = options[:height] || 100
+
+          container = Gtk::Box.new(Gtk::Orientation::HORIZONTAL, 0)
+          container.set_size_request(10, height)
+
+          @separator.set_size_request(2, height)
+          @separator.hexpand = false
+          @separator.vexpand = true
+
+          container.append(@separator)
+          container
+        else
+          @separator.hexpand = true
+          @separator
+        end
 
       super(widget, options)
     end

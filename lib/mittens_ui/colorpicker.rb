@@ -1,11 +1,12 @@
-require_relative "./core"
+# frozen_string_literal: true
+
+require 'mittens_ui/core'
 
 module MittensUi
   # A color picker dialog that allows the user to select a color.
-  # Wraps {https://docs.gtk.org/gtk3/class.ColorChooserDialog.html Gtk::ColorChooserDialog}.
-  # When instantiated, the dialog opens immediately and blocks until the user
-  # selects a color or cancels. The selected color is accessible via {#hex},
-  # {#rgb}, and {#rgba} after the dialog closes.
+  # Wraps {https://docs.gtk.org/gtk4/class.ColorDialog.html Gtk::ColorDialog}.
+  # Opens immediately on instantiation using an async API.
+  # The selected color is accessible via {#hex}, {#rgb}, and {#rgba}.
   #
   # @example Basic usage
   #   picker = MittensUi::ColorPicker.new
@@ -15,22 +16,17 @@ module MittensUi
   #
   # @example With a default color
   #   picker = MittensUi::ColorPicker.new(default: "#336699")
-  #   puts picker.hex   # => "#336699" if user cancels
   #
   # @example With alpha channel
   #   picker = MittensUi::ColorPicker.new(alpha: true)
-  #   puts picker.rgba  # => [255, 0, 0, 128]
   #
-  # @example Reacting to selection
-  #   picker = MittensUi::ColorPicker.new
-  #   if picker.selected?
-  #     puts "User picked: #{picker.hex}"
-  #   else
-  #     puts "User cancelled"
+  # @example With block — only fires if user selected a color
+  #   MittensUi::ColorPicker.new do |color|
+  #     puts color.hex
   #   end
   class ColorPicker
 
-    # @return [Boolean] whether the user selected a color (vs cancelling)
+    # @return [Boolean] whether the user selected a color
     attr_reader :selected
 
     # Creates a new ColorPicker dialog and opens it immediately.
@@ -38,21 +34,20 @@ module MittensUi
     # @param options [Hash] configuration options
     # @option options [String] :title ("Pick a Color") the dialog title
     # @option options [String] :default (nil) a hex color string to pre-select
-    #   e.g. "#ff0000". If nil, defaults to black.
-    # @option options [Boolean] :alpha (false) when true, shows an alpha
-    #   channel slider allowing the user to pick transparency
-    def initialize(options = {})
+    # @option options [Boolean] :alpha (false) show alpha channel slider
+    # @yield [picker] called only if the user selected a color
+    # @yieldparam picker [MittensUi::ColorPicker] the picker with color data
+    def initialize(options = {}, &block)
       @title    = options[:title]   || 'Pick a Color'
       @default  = options[:default] || nil
       @alpha    = options[:alpha]   || false
       @selected = false
       @color    = nil
 
-      open_dialog
+      open_dialog(&block)
     end
 
     # Returns whether the user selected a color.
-    # Returns false if the user cancelled the dialog.
     #
     # @return [Boolean]
     def selected?
@@ -60,13 +55,12 @@ module MittensUi
     end
 
     # Returns the selected color as a hex string.
-    # Returns the default color if the user cancelled, or "#000000" if no default was set.
+    # Returns the default or "#000000" if cancelled.
     #
     # @return [String] hex color string e.g. "#ff0000"
-    # @example
-    #   picker.hex  # => "#ff0000"
     def hex
-      return @default || "#000000" unless @selected && @color
+      return @default || '#000000' unless @selected && @color
+
       r, g, b = rgb
       "#%02x%02x%02x" % [r, g, b]
     end
@@ -75,10 +69,9 @@ module MittensUi
     # Values are in the range 0-255.
     #
     # @return [Array<Integer>] [red, green, blue]
-    # @example
-    #   picker.rgb  # => [255, 0, 0]
     def rgb
       return [0, 0, 0] unless @selected && @color
+
       [
         (@color.red   * 255).round,
         (@color.green * 255).round,
@@ -90,10 +83,9 @@ module MittensUi
     # Values are in the range 0-255.
     #
     # @return [Array<Integer>] [red, green, blue, alpha]
-    # @example
-    #   picker.rgba  # => [255, 0, 0, 255]
     def rgba
       return [0, 0, 0, 255] unless @selected && @color
+
       [
         (@color.red   * 255).round,
         (@color.green * 255).round,
@@ -104,27 +96,34 @@ module MittensUi
 
     private
 
-    # Opens the color chooser dialog, sets the default color if provided,
-    # and stores the result when the user confirms or cancels.
+    # Opens the color dialog using Gtk::ColorDialog async API.
     #
     # @return [void]
-    def open_dialog
+    def open_dialog(&block)
       parent = MittensUi::Application.window
-      dialog = Gtk::ColorChooserDialog.new(title: @title, parent: parent)
-      dialog.use_alpha = @alpha
 
+      dialog = Gtk::ColorDialog.new
+      dialog.title     = @title
+      dialog.modal     = true
+      dialog.with_alpha = @alpha
+
+      # set default color if provided
+      initial_color = nil
       if @default
-        rgba = Gdk::RGBA.new
-        rgba.parse(@default)
-        dialog.rgba = rgba
+        initial_color = Gdk::RGBA.new
+        initial_color.parse(@default)
       end
 
-      if dialog.run == Gtk::ResponseType::OK
-        @color    = dialog.rgba
-        @selected = true
+      dialog.choose_rgba(parent, initial_color, nil) do |_source, result|
+        begin
+          @color    = dialog.choose_rgba_finish(result)
+          @selected = true
+          block&.call(self)
+        rescue => _e
+          # user cancelled or error
+          @selected = false
+        end
       end
-
-      dialog.destroy
     end
   end
 end

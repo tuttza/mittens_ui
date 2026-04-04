@@ -1,6 +1,6 @@
 # MittensUi
 
-A lightweight Ruby GUI toolkit built on top of GTK, inspired by Ruby Shoes. MittensUi wraps the complexity of GTK so you can build desktop apps with plain Ruby objects and a simple, natural API — no DSLs, no magic, just Ruby.
+A lightweight Ruby GUI toolkit built on top of GTK, inspired by Ruby Shoes. MittensUi wraps the complexity of GTK so you can build desktop apps with plain Ruby objects and a simple, natural API — no DSLs, no magic, just Ruby. We will always try to keep up with the latest GTK updates.
 
 ## Requirements
 
@@ -398,6 +398,13 @@ end
 
 ## Development
 
+**Setup Ruby**
+# setup and install Ruby if you have not done so:
+```bash
+rbenv install 4.0.0
+rbenv global 4.0.0`
+```
+
 **Linux**
 ```bash
 git clone https://github.com/tuttza/mittens_ui.git
@@ -408,10 +415,6 @@ bundle install
 **macOS**
 ```bash
 brew install gtk+3 cairo pkg-config rbenv
-
-# setup and install Ruby if you have not done so:
-rbenv install 4.0.0
-rbenv global 4.0.0
 
 git clone https://github.com/tuttza/mittens_ui.git
 cd mittens_ui

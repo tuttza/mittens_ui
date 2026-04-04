@@ -1,8 +1,12 @@
-require_relative "./core"
-require "mittens_ui/helpers"
+# frozen_string_literal: true
+
+require 'mittens_ui/core'
+require 'mittens_ui/helpers'
 
 module MittensUi
+
   # A clickable button widget with optional icon and loading state support.
+  #
   # Wraps {https://docs.gtk.org/gtk3/class.Button.html Gtk::Button}.
   # When in loading state, the button is disabled and a spinner replaces
   # or appears alongside the label to indicate background work is running.
@@ -34,24 +38,23 @@ module MittensUi
     # @option options [Symbol] :width (:full) column width in the layout grid
     # @option options [Boolean] :defer_render (false) skip auto-rendering into layout
     def initialize(options = {})
-      button_title = options[:title] || "Button"
+      button_title = options[:title] || 'Button'
       icon_type    = options[:icon]  || nil
-      @loading     = false
 
-      @button = Gtk::Button.new
-      @box    = Gtk::Box.new(:horizontal, 4)
-      @spinner = Gtk::Spinner.new
+      @loading  = false
+      @button   = Gtk::Button.new
+      @box      = Gtk::Box.new(:horizontal, 4)
+      @spinner  = Gtk::Spinner.new
 
       if icon_type
         image = Gtk::Image.new(icon_name: icon_map[icon_type], size: :button)
-        @box.pack_start(image, expand: false, fill: false, padding: 0)
+        @box.append(image)
       end
 
       @label = Gtk::Label.new(button_title)
-      @box.pack_start(@label,   expand: false, fill: false, padding: 0)
-      @box.pack_start(@spinner, expand: false, fill: false, padding: 0)
-
-      @button.add(@box)
+      @box.append(@label)
+      @box.append(@spinner)
+      @button.set_child(@box)
       @spinner.hide
 
       super(@button, options)
@@ -85,7 +88,7 @@ module MittensUi
     #     puts "Button was clicked!"
     #   end
     def click
-      @button.signal_connect("clicked") do
+      @button.signal_connect('clicked') do
         yield(self)
       end
     end

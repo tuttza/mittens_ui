@@ -1,10 +1,12 @@
-require_relative "./core"
+# frozen_string_literal: true
+
+require 'mittens_ui/core'
 
 module MittensUi
   # A single-line or multiline text input widget.
-  # In single-line mode (default), wraps {https://docs.gtk.org/gtk3/class.Entry.html Gtk::Entry}.
-  # In multiline mode, wraps {https://docs.gtk.org/gtk3/class.TextView.html Gtk::TextView}
-  # inside a {https://docs.gtk.org/gtk3/class.ScrolledWindow.html Gtk::ScrolledWindow}.
+  # In single-line mode (default), wraps {https://docs.gtk.org/gtk4/class.Entry.html Gtk::Entry}.
+  # In multiline mode, wraps {https://docs.gtk.org/gtk4/class.TextView.html Gtk::TextView}
+  # inside a {https://docs.gtk.org/gtk4/class.ScrolledWindow.html Gtk::ScrolledWindow}.
   #
   # @example Single-line textbox
   #   tb = MittensUi::Textbox.new(can_edit: true, placeholder: "Enter name...")
@@ -41,7 +43,7 @@ module MittensUi
     # @option options [Boolean] :defer_render (false) when true, skips auto-rendering
     #   into the layout. Use when passing to a container like {HBox}.
     def initialize(options = {})
-      @multiline = options[:multiline] || false
+      @multiline = options.fetch(:multiline, false)
 
       if @multiline
         init_multiline(options)
@@ -76,9 +78,9 @@ module MittensUi
     #   tb.clear
     def clear
       if @multiline
-        @text_buffer.text = ""
+        @text_buffer.text = ''
       else
-        @textbox.text = ""
+        @textbox.text = ''
       end
     end
 
@@ -113,14 +115,14 @@ module MittensUi
     def init_single_line(options)
       @textbox         = Gtk::Entry.new
       can_edit         = options.fetch(:can_edit, true)
-      max_length       = options[:max_length]  || 200
-      has_password     = options[:password]    || false
-      placeholder_text = options[:placeholder] || ""
+      max_length       = options.fetch(:max_length, 200)
+      has_password     = options.fetch(:password, false)
+      placeholder_text = options.fetch(:placeholder, '')
 
-      @textbox.set_visibility(false) if has_password
-      @textbox.set_editable(can_edit)
-      @textbox.set_max_length(max_length)
-      @textbox.set_placeholder_text(placeholder_text)
+      @textbox.visibility = !has_password
+      @textbox.editable = can_edit
+      @textbox.max_length = max_length
+      @textbox.placeholder_text = placeholder_text
 
       @gtk_widget = @textbox
     end
@@ -130,21 +132,21 @@ module MittensUi
     #
     # @param options [Hash] see {#initialize} for options
     # @return [void]
-    def init_multiline(options)
+    def init_multiline(options = {})
       can_edit = options.fetch(:can_edit, true)
-      height   = options[:height] || 100
+      height   = options.fetch(:height, 100)
 
       @text_view   = Gtk::TextView.new
       @text_buffer = @text_view.buffer
 
-      @text_view.set_editable(can_edit)
-      @text_view.set_wrap_mode(:word_char)
-      @text_view.set_accepts_tab(false)
+      @text_view.editable = can_edit
+      @text_view.wrap_mode = :word_char
+      @text_view.accepts_tab = false
 
       @scrolled_window = Gtk::ScrolledWindow.new
       @scrolled_window.set_policy(:automatic, :automatic)
       @scrolled_window.min_content_height = height
-      @scrolled_window.add(@text_view)
+      @scrolled_window.child = @text_view
 
       @gtk_widget = @scrolled_window
     end

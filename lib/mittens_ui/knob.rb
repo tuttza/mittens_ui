@@ -1,11 +1,13 @@
-require_relative "./core"
-require "mittens_ui/helpers"
+# frozen_string_literal: true
+
+require 'mittens_ui/core'
+require 'mittens_ui/helpers'
 
 module MittensUi
   # A rotary knob widget that mimics the feel of a synthesizer knob.
-  # Built on {https://docs.gtk.org/gtk3/class.DrawingArea.html Gtk::DrawingArea}
+  # Built on {https://docs.gtk.org/gtk4/class.DrawingArea.html Gtk::DrawingArea}
   # and drawn with Cairo. Click and drag up/right to increase the value,
-  # drag down/left to decrease it.
+  # drag down/left to decrease it. Scroll wheel also works.
   #
   # @example Basic knob
   #   knob = MittensUi::Knob.new(min: 0, max: 100, value: 50)
@@ -84,7 +86,7 @@ module MittensUi
 
     private
 
-    # Builds the drawing area and wires up mouse event handlers.
+    # Builds the drawing area and wires up gesture controllers.
     #
     # @return [Gtk::Box] container holding the drawing area and optional label
     def build_widget
@@ -92,52 +94,48 @@ module MittensUi
 
       @drawing_area = Gtk::DrawingArea.new
       @drawing_area.set_size_request(@size, @size)
-      @drawing_area.add_events(
-        Gdk::EventMask::BUTTON_PRESS_MASK   |
-        Gdk::EventMask::BUTTON_RELEASE_MASK |
-        Gdk::EventMask::POINTER_MOTION_MASK |
-        Gdk::EventMask::SCROLL_MASK
-      )
 
-      @drawing_area.signal_connect("draw") do |_widget, cr|
+      @drawing_area.set_draw_func do |_widget, cr, _width, _height|
         draw_knob(cr)
       end
 
-      @drawing_area.signal_connect("button-press-event") do |_widget, event|
+      drag = Gtk::GestureDrag.new
+      drag.signal_connect("drag-begin") do |_gesture, _x, y|
         @dragging = true
-        @last_y   = event.y
-        @last_x   = event.x
+        @last_y   = y
+        @last_x   = 0
       end
 
-      @drawing_area.signal_connect("button-release-event") do
+      drag.signal_connect("drag-update") do |_gesture, offset_x, offset_y|
+        if @dragging
+          delta_y = -offset_y  # negative because dragging up should increase
+          delta_x = offset_x
+          delta   = (delta_y + delta_x) * sensitivity
+          self.value = @value + delta
+          @last_y += offset_y
+          @last_x += offset_x
+        end
+      end
+
+      drag.signal_connect("drag-end") do
         @dragging = false
       end
 
-      @drawing_area.signal_connect("motion-notify-event") do |_widget, event|
-        if @dragging
-          delta_y = @last_y - event.y
-          delta_x = event.x - @last_x
-          delta   = (delta_y + delta_x) * sensitivity
-          self.value = @value + delta
-          @last_y = event.y
-          @last_x = event.x
-        end
+      @drawing_area.add_controller(drag)
+
+      scroll = Gtk::EventControllerScroll.new(:vertical)
+      scroll.signal_connect("scroll") do |_controller, _dx, dy|
+        self.value = @value - dy * sensitivity * 5
+        true
       end
 
-      @drawing_area.signal_connect("scroll-event") do |_widget, event|
-        case event.direction
-        when Gdk::ScrollDirection::UP
-          self.value = @value + sensitivity * 5
-        when Gdk::ScrollDirection::DOWN
-          self.value = @value - sensitivity * 5
-        end
-      end
+      @drawing_area.add_controller(scroll)
 
-      container.pack_start(@drawing_area, expand: false, fill: false, padding: 0)
+      container.append(@drawing_area)
 
       if @label
         lbl = Gtk::Label.new(@label)
-        container.pack_start(lbl, expand: false, fill: false, padding: 0)
+        container.append(lbl)
       end
 
       container
@@ -197,9 +195,9 @@ module MittensUi
       cr.stroke
 
       # indicator dot
-      dot_r  = r - 10
-      dot_x  = cx + dot_r * Math.cos(angle)
-      dot_y  = cy - dot_r * Math.sin(angle)
+      dot_r = r - 10
+      dot_x = cx + dot_r * Math.cos(angle)
+      dot_y = cy - dot_r * Math.sin(angle)
       cr.arc(dot_x, dot_y, 3, 0, 2 * Math::PI)
       cr.set_source_rgb(*@color)
       cr.fill

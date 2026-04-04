@@ -19,3 +19,5 @@ mkmf.log
 .rspec_status
 
 ./releases
+
+Gemfile.lock
