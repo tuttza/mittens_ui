@@ -59,7 +59,6 @@ MittensUi::Application.Window(app_options) do
   MittensUi::Separator.new(:horizontal, top: 6, bottom: 2)
   MittensUi::Label.new('New Contact', top: 4, width: :full)
 
-
   name_tb = MittensUi::Textbox.new(can_edit: true, placeholder: 'Name...')
   addr_tb = MittensUi::Textbox.new(can_edit: true, placeholder: 'Address...')
   phne_tb = MittensUi::Textbox.new(can_edit: true, placeholder: 'Phone #...')
@@ -68,7 +67,7 @@ MittensUi::Application.Window(app_options) do
 
   add_contact_button.click do |btn|
     btn.click do
-      if tb_list.all? { |tb| !tb.text.length.empty? }
+      if tb_list.all? { |tb| !tb.text.empty? }
         contacts_table.add(tb_list.map(&:text))
         tb_list.each(&:clear)
         MittensUi::Notify.new('Contact saved.', type: :info)
