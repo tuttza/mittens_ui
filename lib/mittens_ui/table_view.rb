@@ -48,7 +48,7 @@ module MittensUi
       @scroller.set_child(@grid)
 
       # Calculate height of table:
-      row_height = 24
+      row_height = 21
       header_height = 40
       max_height = 300
       desired_height = [(@data.size * row_height) + header_height, max_height].min
@@ -105,6 +105,7 @@ module MittensUi
     # @return [Boolean]
     def row_selected?(idx = nil)
       return !@selected_row_idx.nil? if idx.nil?
+
       @selected_row_idx == idx
     end
 
@@ -113,6 +114,7 @@ module MittensUi
     # @return [Array<String>, nil]
     def selected_row
       return nil unless @selected_row_idx
+
       @data[@selected_row_idx]
     end
 
@@ -170,11 +172,11 @@ module MittensUi
         }
 
         .row-even {
-          background-color: alpha(@theme_bg_color, 0.96);
+          background-color: shade(@theme_bg_color, 1.02);
         }
 
         .row-odd {
-          background-color: alpha(@theme_bg_color, 0.90);
+          background-color: shade(@theme_bg_color, 0.98);
         }
 
         .table-cell:hover {
@@ -209,7 +211,7 @@ module MittensUi
 
         gesture = Gtk::GestureClick.new
         gesture.set_button(0)
-        gesture.signal_connect("pressed") do |_g, _n, _x, _y|
+        gesture.signal_connect('pressed') do |_g, _n, _x, _y|
           sort_column(col_idx)
         end
         frame.add_controller(gesture)
@@ -231,17 +233,23 @@ module MittensUi
           label.set_xalign(0.0)
           label.set_hexpand(true)
 
-          frame = Gtk::Frame.new
-          frame.set_child(label)
-          frame.set_hexpand(true)
-          frame.style_context.add_class('table-cell')
-          frame.style_context.add_class(base_class)
-          frame.style_context.add_class('row-selected') if row_selected?(row_idx)
+          cell_box = Gtk::Box.new(:horizontal, 0)
+          cell_box.set_hexpand(true)
+
+          label = Gtk::Label.new(cell.to_s)
+          label.set_xalign(0.0)
+          label.set_hexpand(true)
+
+          cell_box.append(label)
+
+          cell_box.style_context.add_class('table-cell')
+          cell_box.style_context.add_class(base_class)
+          cell_box.style_context.add_class('row-selected') if row_selected?(row_idx)
 
           gesture = Gtk::GestureClick.new
           gesture.set_button(0)
 
-          gesture.signal_connect("pressed") do |_g, _n, _x, _y|
+          gesture.signal_connect('pressed') do |_g, _n, _x, _y|
             now = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
             if @last_click_time &&
@@ -253,10 +261,7 @@ module MittensUi
             else
               # SINGLE CLICK (delayed slightly to avoid conflict)
               GLib::Timeout.add(250) do
-                if @last_clicked_row == row_idx
-                  @on_row_clicked&.call(@data[row_idx])
-                end
-                false
+                @last_clicked_row == row_idx ? @on_row_clicked&.call(@data[row_idx]) : false
               end
             end
 
@@ -267,10 +272,10 @@ module MittensUi
             render_rows
           end
 
-          frame.add_controller(gesture)
+          cell_box.add_controller(gesture)
 
-          @grid.attach(frame, col_idx, row_idx + 1, 1, 1)
-          widget_row << frame
+          @grid.attach(cell_box, col_idx, row_idx + 1, 1, 1)
+          widget_row << cell_box
         end
 
         @row_widgets << widget_row
@@ -285,10 +290,10 @@ module MittensUi
       @sort_directions[col_idx] = !@sort_directions[col_idx]
 
       @header_labels.each_with_index do |lbl, i|
-        lbl.set_label(@headers[i].to_s) if lbl
+        lbl&.set_label(@headers[i].to_s)
       end
 
-      arrow = dir == :asc ? "  ▲" : "  ▼"
+      arrow = dir == :asc ? '  ▲' : '  ▼'
       @header_labels[col_idx].set_label(@headers[col_idx] + arrow)
 
       @data.sort_by! { |row| row[col_idx].to_s }
