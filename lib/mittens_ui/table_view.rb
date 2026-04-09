@@ -3,297 +3,298 @@
 require 'mittens_ui/core'
 
 module MittensUi
-  # A tabular data widget with sortable columns, row selection, and optional
-  # inline cell editing. Wraps {https://docs.gtk.org/gtk4/class.ColumnView.html Gtk::ColumnView}
-  # backed by a {https://docs.gtk.org/gtk4/class.StringList.html Gtk::StringList}
-  # inside a {https://docs.gtk.org/gtk4/class.ScrolledWindow.html Gtk::ScrolledWindow}.
+  # A simple, but custom table widget built on {Gtk::Grid}.
   #
-  # @example Basic table
+  # Provides:
+  # - Column headers with sorting (▲ ▼ indicators)
+  # - Row selection
+  # - Single-click and double-click callbacks
+  # - Dynamic row insertion
+  # - Dark mode friendly styling
+  #
+  # @example Basic usage
   #   table = MittensUi::TableView.new(
-  #     headers: ["Name", "Email"],
-  #     data: [["John", "john@example.com"]]
+  #     ['Name', 'Email'],
+  #     [['John', 'john@example.com']]
   #   )
   #
-  # @example Table with all columns editable
-  #   table = MittensUi::TableView.new(
-  #     headers: ["Name", "Email"],
-  #     data: [["John", "john@example.com"]],
-  #     editable: true
-  #   )
+  # @example Add row
+  #   table.add(['Jane', 'jane@example.com'])
   #
-  # @example Table with specific columns editable
-  #   table = MittensUi::TableView.new(
-  #     headers: ["Name", "Email", "Phone"],
-  #     data: [["John", "john@example.com", "555-1234"]],
-  #     editable_columns: [0, 2]
-  #   )
+  # @example Click handlers
+  #   table.row_clicked { |row| puts row.inspect }
+  #   table.row_double_clicked { |row| puts "Double: #{row.inspect}" }
+  #
   class TableView < Core
+    attr_reader :data, :headers, :selected_row_idx
 
-    # Creates a new TableView widget.
-    #
-    # @param options [Hash] configuration options
-    # @option options [Array<String>] :headers ([]) column header labels
-    # @option options [Array<Array<String>>] :data ([]) initial table data,
-    #   each element is an array of strings representing a row
-    # @option options [Boolean] :editable (false) when true, all cells are editable
-    # @option options [Array<Integer>] :editable_columns ([]) list of column indices
-    #   that should be editable
-    # @option options [Symbol] :width (:full) column width in the layout grid
-    # @option options [Boolean] :defer_render (false) skip auto-rendering into layout
-    def initialize(options = {})
-      @headers          = options.fetch(:headers, [])
-      @data             = options.fetch(:data, [])
-      @editable         = options.fetch(:editable, false)
-      @editable_columns = options.fetch(:editable_columns, [])
-      @on_cell_edited   = nil
-      @on_row_clicked   = nil
+    # @param headers [Array<String>] column headers
+    # @param data [Array<Array<String>>] initial rows
+    # @param options [Hash] Core layout options
+    def initialize(headers = [], data = [], options = {})
+      @headers = headers
+      @data = data
+      @row_widgets = []
+      @header_labels = []
+      @selected_row_idx = nil
+      @sort_directions = {}
 
-      raise ArgumentError, 'Invalid table data' unless data_valid?(@headers, @data)
+      @grid = Gtk::Grid.new
+      @grid.set_column_spacing(0)
+      @grid.set_row_spacing(0)
 
-      init_store
-      init_selection
-      init_column_view
-      init_columns
-      init_data_rows(@data)
+      @scroller = Gtk::ScrolledWindow.new
+      @scroller.set_policy(:automatic, :automatic)
+      @scroller.set_child(@grid)
 
-      @scrolled_window = Gtk::ScrolledWindow.new
-      @scrolled_window.min_content_height = [@data.size * 30, 300].min
-      @scrolled_window.set_child(@column_view)
+      # Calculate height of table:
+      row_height = 24
+      header_height = 40
+      max_height = 300
+      desired_height = [(@data.size * row_height) + header_height, max_height].min
 
-      super(@scrolled_window, options)
+      # Set the scroller's min and max height
+      @scroller.set_min_content_height(desired_height)
+      @scroller.set_max_content_height(desired_height)
+
+      super(@scroller, options)
+
+      # Click handling
+      @on_row_clicked = nil
+      @on_row_double_clicked = nil
+      @last_click_time = nil
+      @last_clicked_row = nil
+
+      setup_css
+      render_headers
+      render_rows
     end
 
-    # Adds a row to the table.
-    #
-    # @param data [Array<String>] the row data, one element per column
-    # @param direction [Symbol] +:append+ (default) or +:prepend+
-    # @return [void]
-    # @example
-    #   table.add(["Jane Doe", "jane@example.com"])
-    #   table.add(["First", "first@example.com"], :prepend)
-    def add(data, direction = :append)
-      return if data.empty?
+    # ---------------------------
+    # Public API
+    # ---------------------------
 
-      encoded = encode_row(data)
+    # Add a row to the table
+    #
+    # @param row [Array<String>] row data
+    # @param direction [Symbol] :append or :prepend
+    # @return [void]
+    def add(row, direction = :append)
+      return if row.nil? || row.empty?
+
       if direction == :prepend
-        @store.splice(0, 0, [encoded])
+        @data.unshift(row)
       else
-        @store.append(encoded)
+        @data << row
       end
+
+      render_rows
     end
 
-    # Clears all rows from the table.
+    # Replace table data
     #
-    # @return [void]
-    def clear
-      @store.splice(0, @store.n_items, [])
+    # @param new_data [Array<Array<String>>]
+    def update_data(new_data)
+      @data = new_data
+      render_rows
     end
 
-    # Returns the number of rows in the table.
+    # Check if a row is selected
     #
-    # @return [Integer] the row count
-    def row_count
-      @store.n_items
+    # @param idx [Integer, nil]
+    # @return [Boolean]
+    def row_selected?(idx = nil)
+      return !@selected_row_idx.nil? if idx.nil?
+      @selected_row_idx == idx
     end
 
-    # Returns the currently selected row as an array of strings.
+    # Get selected row data
     #
-    # @return [Array<String>, nil] the selected row values or nil if nothing selected
-    # @example
-    #   table.selected_row  # => ["John", "john@example.com"]
+    # @return [Array<String>, nil]
     def selected_row
-      pos = @selection.selected
-
-      return nil if pos == Gtk::INVALID_LIST_POSITION
-
-      decode_row(@store.get_string(pos))
+      return nil unless @selected_row_idx
+      @data[@selected_row_idx]
     end
 
-    # Removes the currently selected row and returns its values.
+    # Remove selected row
     #
-    # @return [Array<String>] the removed row values, or empty array if nothing selected
+    # @return [Array<String>, nil]
     def remove_selected
-      pos = @selection.selected
+      return nil unless @selected_row_idx
 
-      return [] if pos == Gtk::INVALID_LIST_POSITION
-
-      values = selected_row
-      @store.remove(pos)
-      values
+      removed = @data.delete_at(@selected_row_idx)
+      @selected_row_idx = nil
+      render_rows
+      removed
     end
 
-    # Connects a block to the row activation event.
+    # Register single-click handler
     #
-    # @yield [values] called when a row is activated
-    # @yieldparam values [Array<String>] the values of the activated row
-    # @return [void]
-    # @example
-    #   table.row_clicked { |row| puts row.inspect }
+    # @yield [row] row data
     def row_clicked(&block)
       @on_row_clicked = block
     end
 
-    # Connects a block to the row activation event (double click/Enter)
+    # Register double-click handler
+    #
+    # @yield [row] row data
     def row_double_clicked(&block)
       @on_row_double_clicked = block
     end
 
-    # Returns true if a row is currently selected, false otherwise.
-    #
-    # @return [Boolean] true if a row is selected, false otherwise
-    #
-    # @example
-    #   if table.row_selected?
-    #     puts "A row is selected!"
-    #   else
-    #     puts "No row is selected."
-    #   end
-    def row_selected?
-      @selection.selected != Gtk::INVALID_LIST_POSITION
-    end
-
-    # Connects a block to the cell edited event.
-    #
-    # @yield [row, col, new_value] called when a cell is edited
-    # @yieldparam row [Integer] the row index
-    # @yieldparam col [Integer] the column index
-    # @yieldparam new_value [String] the new value
-    # @return [void]
-    # @example
-    #   table.cell_edited { |row, col, value| puts "#{row},#{col} => #{value}" }
-    def cell_edited(&block)
-      @on_cell_edited = block
-    end
+    # ---------------------------
+    # Rendering
+    # ---------------------------
 
     private
 
-    # Encodes a row array as a pipe-delimited string for storage in StringList.
-    #
-    # @param row [Array<String>] the row data
-    # @return [String] encoded row
-    def encode_row(row)
-      row.map { |v| v.to_s.gsub('|', '\\|') }.join('|')
+    def setup_css
+      css = Gtk::CssProvider.new
+      css.load(data: <<~CSS)
+        frame {
+          border-radius: 0;
+          box-shadow: none;
+          border: none;
+        }
+
+        .table-cell {
+          padding: 6px 10px;
+          border-bottom: 1px solid @borders;
+        }
+
+        .header-cell {
+          font-weight: bold;
+          padding: 8px 10px;
+          border-bottom: 2px solid @borders;
+          background-color: @theme_base_color;
+        }
+
+        .row-even {
+          background-color: alpha(@theme_bg_color, 0.96);
+        }
+
+        .row-odd {
+          background-color: alpha(@theme_bg_color, 0.90);
+        }
+
+        .table-cell:hover {
+          background-color: alpha(@theme_selected_bg_color, 0.25);
+        }
+
+        .row-selected {
+          background-color: @theme_selected_bg_color;
+          color: @theme_selected_fg_color;
+        }
+      CSS
+
+      Gtk::StyleContext.add_provider_for_display(
+        Gdk::Display.default,
+        css,
+        Gtk::StyleProvider::PRIORITY_USER
+      )
     end
 
-    # Decodes a pipe-delimited string back into a row array.
-    #
-    # @param str [String] the encoded row
-    # @return [Array<String>] the decoded row
-    def decode_row(str)
-      str.split(/(?<!\\)\|/).map { |v| v.gsub('\\|', '|') }
-    end
-
-    # Initializes the Gtk::StringList backing store.
-    # Each item encodes a full row as a pipe-delimited string.
-    #
-    # @return [void]
-    def init_store
-      @store = Gtk::StringList.new([])
-    end
-
-    # Initializes single selection model wrapping the store.
-    #
-    # @return [void]
-    def init_selection
-      @selection = Gtk::SingleSelection.new
-      @selection.model = @store
-
-      # Handle selection changes (single click)
-      @selection.signal_connect('selection-changed') do
-        pos = @selection.selected
-        next if pos == Gtk::INVALID_LIST_POSITION
-
-        decoded = decode_row(@store.get_string(pos))
-        @on_row_clicked&.call(decoded)
-      end
-    end
-
-    # Initializes the Gtk::ColumnView.
-    #
-    # @return [void]
-    def init_column_view
-      @column_view = Gtk::ColumnView.new(@selection)
-      @column_view.reorderable = true
-
-      # Handle row activation (double click/Enter)
-      @column_view.signal_connect('activate') do |_, pos|
-        next if pos == Gtk::INVALID_LIST_POSITION
-
-        decoded = decode_row(@store.get_string(pos))
-        @on_row_double_clicked&.call(decoded)
-      end
-    end
-
-    # Initializes columns for each header.
-    #
-    # @return [void]
-    def init_columns
+    def render_headers
       @headers.each_with_index do |header, col_idx|
-        next unless header.is_a?(String)
+        label = Gtk::Label.new(header.to_s)
+        label.set_xalign(0.0)
+        label.set_hexpand(true)
 
-        factory = Gtk::SignalListItemFactory.new
+        @header_labels[col_idx] = label
 
-        factory.signal_connect('setup') do |_f, list_item|
-          label = Gtk::Label.new('')
-          label.xalign = 0
-          list_item.child = label
+        frame = Gtk::Frame.new
+        frame.set_child(label)
+        frame.set_hexpand(true)
+        frame.style_context.add_class('header-cell')
+
+        gesture = Gtk::GestureClick.new
+        gesture.set_button(0)
+        gesture.signal_connect("pressed") do |_g, _n, _x, _y|
+          sort_column(col_idx)
         end
+        frame.add_controller(gesture)
 
-        factory.signal_connect('bind') do |_f, list_item|
-          pos   = list_item.position
-          row   = decode_row(@store.get_string(pos))
-          value = row[col_idx] || ''
-          list_item.child.label = value
-        end
-
-        column = Gtk::ColumnViewColumn.new(header, factory)
-        column.resizable = true
-        column.expand    = true
-        @column_view.append_column(column)
+        @grid.attach(frame, col_idx, 0, 1, 1)
       end
     end
 
-    # Populates the store with initial data rows.
-    #
-    # @param data [Array<Array<String>>] the data rows
-    # @return [void]
-    def init_data_rows(data)
-      data.each { |row| @store.append(encode_row(row)) }
-    end
+    def render_rows
+      @row_widgets.each { |row| row.each { |w| @grid.remove(w) } }
+      @row_widgets.clear
 
-    # Returns true if the given column index should be editable.
-    #
-    # @param col_index [Integer] the column index
-    # @return [Boolean]
-    def column_editable?(col_index)
-      return false # TODO: I need to figure how make editable cells in GTK4
+      @data.each_with_index do |row, row_idx|
+        base_class = row_idx.even? ? 'row-even' : 'row-odd'
+        widget_row = []
 
-      #@editable || @editable_columns.include?(col_index)
-    end
+        row.each_with_index do |cell, col_idx|
+          label = Gtk::Label.new(cell.to_s)
+          label.set_xalign(0.0)
+          label.set_hexpand(true)
 
-    # Validates that headers and data are correctly structured.
-    #
-    # @param headers [Array<String>] column headers
-    # @param data [Array<Array<String>>] table data
-    # @return [Boolean]
-    def data_valid?(headers, data)
-      unless data.is_a?(Array) && headers.is_a?(Array)
-        puts '=====[MittensUi: Critical Error]====='
-        puts 'headers and data must both be Arrays'
-        return false
-      end
+          frame = Gtk::Frame.new
+          frame.set_child(label)
+          frame.set_hexpand(true)
+          frame.style_context.add_class('table-cell')
+          frame.style_context.add_class(base_class)
+          frame.style_context.add_class('row-selected') if row_selected?(row_idx)
 
-      data.each_with_index do |row, idx|
-        unless row.is_a?(Array) && row.size == headers.size
-          puts '=====[MittensUi: Critical Error]====='
-          puts 'Row length must match header length.'
-          puts "Failed at Row:  #{idx}"
-          puts "Row Length:     #{row.size} elements"
-          puts "Header Length:  #{headers.size} elements"
-          return false
+          gesture = Gtk::GestureClick.new
+          gesture.set_button(0)
+
+          gesture.signal_connect("pressed") do |_g, _n, _x, _y|
+            now = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+
+            if @last_click_time &&
+               @last_clicked_row == row_idx &&
+               (now - @last_click_time) < 0.3
+
+              # DOUBLE CLICK
+              @on_row_double_clicked&.call(@data[row_idx])
+            else
+              # SINGLE CLICK (delayed slightly to avoid conflict)
+              GLib::Timeout.add(250) do
+                if @last_clicked_row == row_idx
+                  @on_row_clicked&.call(@data[row_idx])
+                end
+                false
+              end
+            end
+
+            @last_click_time = now
+            @last_clicked_row = row_idx
+            @selected_row_idx = row_idx
+
+            render_rows
+          end
+
+          frame.add_controller(gesture)
+
+          @grid.attach(frame, col_idx, row_idx + 1, 1, 1)
+          widget_row << frame
         end
+
+        @row_widgets << widget_row
       end
-      true
+
+      @grid.show
+      @row_widgets.flatten.each(&:show)
+    end
+
+    def sort_column(col_idx)
+      dir = @sort_directions[col_idx] ? :desc : :asc
+      @sort_directions[col_idx] = !@sort_directions[col_idx]
+
+      @header_labels.each_with_index do |lbl, i|
+        lbl.set_label(@headers[i].to_s) if lbl
+      end
+
+      arrow = dir == :asc ? "  ▲" : "  ▼"
+      @header_labels[col_idx].set_label(@headers[col_idx] + arrow)
+
+      @data.sort_by! { |row| row[col_idx].to_s }
+      @data.reverse! if dir == :desc
+
+      render_rows
     end
   end
 end
