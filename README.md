@@ -243,27 +243,14 @@ img = MittensUi::Image.new("./assets/animation.gif")
 ### TableView
 ```ruby
 table = MittensUi::TableView.new(
-  headers: ["Name", "Email"],
-  data: [
-    ["John", "john@example.com"],
-    ["Jane", "jane@example.com"]
-  ],
+  ['Name', 'Email'],
+  [['John', 'john@example.com']]
 )
 
-table.add(["Bob", "bob@example.com"])
-table.add(["First", "first@example.com"], :prepend)
+table.add(['Jane', 'jane@example.com'])
 
-table.remove_selected
-
-puts table.row_count
-
-puts table.selected_row.inspect
-
-# Single click on the row
 table.row_clicked { |row| puts row.inspect }
-
-# Double click on the row
-table.row_double_clicked { |row| puts row.inspect }
+table.row_double_clicked { |row| puts "Double: #{row.inspect}" }
 ```
 
 ### Alert
