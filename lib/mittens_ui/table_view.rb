@@ -204,32 +204,35 @@ module MittensUi
       css.load(data: <<~CSS)
         box.table-cell {
           padding: 6px 10px;
-          border-bottom: 1px solid #ddd;
-          background-color: #ffffff;
+          border-bottom: 1px solid @borders;
+          background-color: @theme_base_color;
+          color: @theme_text_color;
         }
 
         box.header-cell {
           font-weight: bold;
           padding: 8px 10px;
-          border-bottom: 2px solid #ccc;
-          background-color: #f5f5f5;
+          border-bottom: 2px solid @borders;
+          background-color: shade(@theme_base_color, 0.95);
+          color: @theme_text_color;
         }
 
         box.row-even {
-          background-color: #ffffff;
+          background-color: shade(@theme_base_color, 1.00);
         }
 
         box.row-odd {
-          background-color: #f7f7f7;
+          background-color: shade(@theme_base_color, 0.97);
         }
 
         box.table-cell:hover {
-          background-color: #e6f2ff;
+          background-color: @theme_selected_bg_color;
+          color: @theme_selected_fg_color;
         }
 
         box.row-selected {
-          background-color: #cce0ff;
-          color: #000000;
+          background-color: @theme_selected_bg_color;
+          color: @theme_selected_fg_color;
         }
       CSS
 
