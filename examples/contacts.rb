@@ -2,6 +2,7 @@ require '../lib/mittens_ui'
 
 app_options = { name: 'contacts', title: 'Contacts', height: 680, width: 600, can_resize: true }.freeze
 
+
 MittensUi::Application.Window(app_options) do
   puts MittensUi::Application.store.get(:last_selected_contact)
 
@@ -25,63 +26,39 @@ MittensUi::Application.Window(app_options) do
   # --- Contacts Table ---
   MittensUi::Separator.new(:horizontal, top: 2, bottom: 2)
 
-contacts_table = MittensUi::TableView.new(
-  ['Name', 'Email', 'Phone'],
-  [
-    ['John Appleseed', 'john@example.com', '555-1234'],
-    ['Jane Doe', 'jane@example.com', '555-5678'],
-    ['Michael Smith', 'michael.smith@email.com', '555-1001'],
-    ['Emily Johnson', 'emily.j@email.com', '555-1002'],
-    ['Chris Evans', 'cevans@email.com', '555-1003'],
-    ['Olivia Brown', 'olivia.b@email.com', '555-1004'],
-    ['Daniel Wilson', 'dan.w@email.com', '555-1005'],
-    ['Sophia Martinez', 'sophia.m@email.com', '555-1006'],
-    ['James Anderson', 'j.anderson@email.com', '555-1007'],
-    ['Isabella Thomas', 'isabella.t@email.com', '555-1008'],
-    ['Benjamin Taylor', 'ben.taylor@email.com', '555-1009'],
-    ['Mia Moore', 'mia.moore@email.com', '555-1010'],
-    ['Lucas Jackson', 'lucas.j@email.com', '555-1011'],
-    ['Charlotte White', 'charlotte.w@email.com', '555-1012'],
-    ['Henry Harris', 'henry.h@email.com', '555-1013'],
-    ['Amelia Martin', 'amelia.m@email.com', '555-1014'],
-    ['Alexander Thompson', 'alex.t@email.com', '555-1015'],
-    ['Evelyn Garcia', 'evelyn.g@email.com', '555-1016'],
-    ['William Martinez', 'will.m@email.com', '555-1017'],
-    ['Harper Robinson', 'harper.r@email.com', '555-1018'],
-    ['Daniel Clark', 'dan.clark@email.com', '555-1019'],
-    ['Abigail Rodriguez', 'abigail.r@email.com', '555-1020'],
-    ['Matthew Lewis', 'matt.lewis@email.com', '555-1021'],
-    ['Ella Lee', 'ella.lee@email.com', '555-1022'],
-    ['David Walker', 'd.walker@email.com', '555-1023'],
-    ['Scarlett Hall', 'scarlett.h@email.com', '555-1024'],
-    ['Joseph Allen', 'j.allen@email.com', '555-1025'],
-    ['Grace Young', 'grace.y@email.com', '555-1026'],
-    ['Samuel King', 'sam.king@email.com', '555-1027'],
-    ['Chloe Wright', 'chloe.w@email.com', '555-1028'],
-    ['Andrew Scott', 'andrew.s@email.com', '555-1029'],
-    ['Victoria Green', 'victoria.g@email.com', '555-1030'],
-    ['Joshua Adams', 'josh.adams@email.com', '555-1031'],
-    ['Lily Baker', 'lily.b@email.com', '555-1032'],
-    ['Ryan Nelson', 'ryan.n@email.com', '555-1033'],
-    ['Zoey Carter', 'zoey.c@email.com', '555-1034'],
-    ['Nathan Mitchell', 'nathan.m@email.com', '555-1035'],
-    ['Hannah Perez', 'hannah.p@email.com', '555-1036'],
-    ['Aaron Roberts', 'aaron.r@email.com', '555-1037'],
-    ['Sofia Turner', 'sofia.t@email.com', '555-1038'],
-    ['Caleb Phillips', 'caleb.p@email.com', '555-1039'],
-    ['Avery Campbell', 'avery.c@email.com', '555-1040'],
-    ['Ethan Parker', 'ethan.p@email.com', '555-1041'],
-    ['Madison Evans', 'madison.e@email.com', '555-1042'],
-    ['Logan Edwards', 'logan.e@email.com', '555-1043'],
-    ['Layla Collins', 'layla.c@email.com', '555-1044'],
-    ['Noah Stewart', 'noah.s@email.com', '555-1045'],
-    ['Riley Sanchez', 'riley.s@email.com', '555-1046'],
-    ['Jack Morris', 'jack.m@email.com', '555-1047'],
-    ['Aria Rogers', 'aria.r@email.com', '555-1048'],
-    ['Sebastian Reed', 'sebastian.r@email.com', '555-1049'],
-    ['Nora Cook', 'nora.c@email.com', '555-1050']
+  first_names = %w[
+    John Jane Michael Emily Chris Olivia Daniel Sophia James Isabella
+    Benjamin Mia Lucas Charlotte Henry Amelia Alexander Evelyn William Harper
+    Daniel Abigail Matthew Ella David Scarlett Joseph Grace Samuel Chloe
+    Andrew Victoria Joshua Lily Ryan Zoey Nathan Hannah Aaron Sofia
+    Caleb Avery Ethan Madison Logan Layla Noah Riley Jack Aria
+    Sebastian Nora Liam Ava Mason Ella Ethan Harper Logan Grace
   ]
-)
+
+  last_names = %w[
+    Smith Johnson Brown Taylor Anderson Thomas Jackson White Harris Martin
+    Thompson Garcia Martinez Robinson Clark Rodriguez Lewis Lee Walker Hall
+    Allen Young King Wright Scott Green Adams Baker Nelson Carter Mitchell
+    Perez Roberts Turner Phillips Campbell Parker Evans Edwards Collins Stewart
+    Sanchez Morris Rogers Reed Cook Morgan Bell Murphy Bailey Rivera Cooper
+  ]
+
+  contacts_data = 1000.times.map do |i|
+    first = first_names.sample
+    last  = last_names.sample
+
+    name  = "#{first} #{last}"
+    email = "#{first.downcase}.#{last.downcase}#{i}@example.com"
+    phone = "555-#{1000 + i}"
+
+    [name, email, phone]
+  end
+
+  contacts_table = MittensUi::TableView.new(
+    ['Name', 'Email', 'Phone'],
+    contacts_data
+  )
+
   contacts_table.row_double_clicked do |row|
     puts "Double clicked: #{row.inspect}"
   end
