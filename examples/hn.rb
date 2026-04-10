@@ -27,6 +27,19 @@ class HackerNewsClient
       get_item(id)
     end
   end
+
+  def self.map_stories_to_rows(stories_data)
+    rows = stories_data.map do |story|
+      url = story['url'] || "https://news.ycombinator.com/item?id=#{story['id']}"
+
+      [
+        story['title'] || 'N/A',
+        story['by'] || 'N/A',
+        story['score'] || 0,
+        url
+      ]
+    end
+  end
 end
 
 MittensUi::Application.Window(
@@ -36,18 +49,8 @@ MittensUi::Application.Window(
   height: 600
 ) do
 
-  stories = HackerNewsClient.top_stories()
-
-  rows = stories.map do |story|
-    url = story['url'] || "https://news.ycombinator.com/item?id=#{story['id']}"
-
-    [
-      story['title'] || 'N/A',
-      story['by'] || 'N/A',
-      story['score'] || 0,
-      url
-    ]
-  end
+  stories = HackerNewsClient.top_stories
+  rows = HackerNewsClient.map_stories_to_rows(stories)
 
   top_stories_table = MittensUi::TableView.new(['Title', 'Author', 'Score', 'URL'].freeze, rows)
 
@@ -55,5 +58,12 @@ MittensUi::Application.Window(
       link = MittensUi::WebLink.new('', row[3])
       link.open_url
       link.remove
+  end
+
+  MittensUi::Button.new(title: "Refresh Stories").click do |btn|
+    btn.loading do
+      stories = HackerNewsClient.top_stories(5)
+      top_stories_table.update_data(HackerNewsClient.map_stories_to_rows(stories))
+    end
   end
 end
