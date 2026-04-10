@@ -185,7 +185,7 @@ module MittensUi
       end
 
       total_pages = (@data.size / PAGE_SIZE.to_f).ceil
-      @page_label.set_label("Page #{@current_page + 1} / #{total_pages}")
+      @page_label.set_label("#{@current_page + 1} / #{total_pages}")
 
       @prev_btn.set_sensitive(@current_page > 0)
       @next_btn.set_sensitive(@current_page < total_pages - 1)
