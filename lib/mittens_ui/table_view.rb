@@ -23,7 +23,7 @@ module MittensUi
   #   table.add(['Jane', 'jane@example.com'])
   #
   # @example Pagination (automatic)
-  #   # Pagination UI appears automatically when data > 500 rows
+  #   # Pagination UI appears automatically when data > 500 rows, unless you change it by using options hash.
   #
   class TableView < Core
     attr_reader :data, :headers, :selected_row_idx
@@ -40,6 +40,9 @@ module MittensUi
       @selected_row_idx = nil
       @sort_directions = {}
       @current_page = 0
+
+      @page_threshold = options.fetch(:page_threshold, PAGE_THRESHOLD)
+      @page_size = options.fetch(:page_size, PAGE_SIZE)
 
       # ---------------------------
       # GTK Structure
@@ -149,23 +152,23 @@ module MittensUi
     # ---------------------------
 
     def paginated_data
-      return @data if @data.size <= PAGE_THRESHOLD
+      return @data if @data.size <= @page_threshold
 
-      start = @current_page * PAGE_SIZE
-      @data.slice(start, PAGE_SIZE) || []
+      start = @current_page * @page_size
+      @data.slice(start, @page_size) || []
     end
 
     def next_page
-      return if @data.size <= PAGE_THRESHOLD
+      return if @data.size <= @page_threshold
 
-      max_page = (@data.size / PAGE_SIZE.to_f).ceil - 1
+      max_page = (@data.size / @page_size.to_f).ceil - 1
       @current_page = [@current_page + 1, max_page].min
       render_rows
       update_pagination_ui
     end
 
     def prev_page
-      return if @data.size <= PAGE_THRESHOLD
+      return if @data.size <= @page_threshold
 
       @current_page = [@current_page - 1, 0].max
       render_rows
@@ -173,18 +176,18 @@ module MittensUi
     end
 
     def adjust_page_after_insert
-      return if @data.size <= PAGE_THRESHOLD
+      return if @data.size <= @page_threshold
 
-      @current_page = (@data.size / PAGE_SIZE.to_f).floor
+      @current_page = (@data.size / @page_size.to_f).floor
     end
 
     def update_pagination_ui
-      if @data.size <= PAGE_THRESHOLD
+      if @data.size <= @page_threshold
         @pagination_box.hide
         return
       end
 
-      total_pages = (@data.size / PAGE_SIZE.to_f).ceil
+      total_pages = (@data.size / @page_size.to_f).ceil
       @page_label.set_label("#{@current_page + 1} / #{total_pages}")
 
       @prev_btn.set_sensitive(@current_page > 0)
