@@ -338,7 +338,22 @@ module MittensUi
       arrow = dir == :asc ? ' ▲' : ' ▼'
       @header_labels[col_idx].set_label(@headers[col_idx] + arrow)
 
-      @data.sort_by! { |row| row[col_idx].to_s }
+      @data.sort_by! do |row|
+        val = row[col_idx]
+
+        case val
+        when Integer
+          val
+        when Float
+          val
+        when String
+          # try numeric string first
+          Integer(val) rescue Float(val) rescue val.downcase
+        else
+          val.to_s
+        end
+      end
+
       @data.reverse! if dir == :desc
 
       render_rows

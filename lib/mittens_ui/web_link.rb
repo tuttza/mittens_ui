@@ -43,5 +43,10 @@ module MittensUi
       @web_link = Gtk::LinkButton.new(@url, @name)
       super(@web_link, options)
     end
+
+    def open_url
+      launcher = Gtk::UriLauncher.new(@url)
+      launcher.launch
+    end
   end
 end
