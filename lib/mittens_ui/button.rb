@@ -53,7 +53,9 @@ module MittensUi
 
       @label = Gtk::Label.new(button_title)
       @box.append(@label)
+      @box.set_halign(:center)
       @box.append(@spinner)
+
       @button.set_child(@box)
       @spinner.hide
 
