@@ -38,8 +38,8 @@ module MittensUi
     # @option options [Symbol] :width (:full) column width in the layout grid
     # @option options [Boolean] :defer_render (false) skip auto-rendering into layout
     def initialize(options = {})
-      button_title = options[:title] || 'Button'
-      icon_type    = options[:icon]  || nil
+      button_title = options.fetch(:title, 'Button')
+      icon_type    = options.fetch(:icon, nil)
 
       @loading  = false
       @button   = Gtk::Button.new

@@ -25,8 +25,8 @@ module MittensUi
     #   Accepted values are +:left+ and +:right+
     # @option options [Boolean] :defer_render (false) skip auto-rendering into layout
     def initialize(widgets, options = {})
-      title    = options[:title]    || ''
-      position = options[:position] || :left
+      title    = options.fetch(:title, '')
+      position = options.fetch(:position, :left)
 
       @header = Gtk::HeaderBar.new
 
@@ -36,9 +36,8 @@ module MittensUi
       title_label = Gtk::Label.new(title)
       @header.title_widget = title_label
 
-
       box = Gtk::Box.new(:horizontal, 0)
-      box.add_css_class("linked")
+      box.add_css_class('linked')
 
       widgets.each do |w|
         w.remove

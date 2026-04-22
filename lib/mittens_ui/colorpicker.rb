@@ -38,9 +38,9 @@ module MittensUi
     # @yield [picker] called only if the user selected a color
     # @yieldparam picker [MittensUi::ColorPicker] the picker with color data
     def initialize(options = {}, &block)
-      @title    = options[:title]   || 'Pick a Color'
-      @default  = options[:default] || nil
-      @alpha    = options[:alpha]   || false
+      @title    = options.fetch(:title, 'Pick a Color')
+      @default  = options.fetch(:default, nil)
+      @alpha    = options.fetch(:alpha, false)
       @selected = false
       @color    = nil
 

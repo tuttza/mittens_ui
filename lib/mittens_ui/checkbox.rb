@@ -24,7 +24,7 @@ module MittensUi
     # @option options [Symbol] :width (:full) column width in the layout grid
     # @option options [Boolean] :defer_render (false) skip auto-rendering into layout
     def initialize(options = {})
-      label    = options[:label] || 'Checkbox'
+      label    = options.fetch(:label, 'Checkbox')
       @value   = nil
       @checkbox = Gtk::CheckButton.new
       @checkbox.set_label(label.to_s)

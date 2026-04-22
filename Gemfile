@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "4.0.0"
+ruby "4.0.3"
 
 # Specify your gem's dependencies in mittens_ui.gemspec
 gemspec

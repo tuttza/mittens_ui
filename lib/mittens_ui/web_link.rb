@@ -44,6 +44,9 @@ module MittensUi
       super(@web_link, options)
     end
 
+    # Opens the set @url link in a web browser.
+    #
+    # @return [void]
     def open_url
       launcher = Gtk::UriLauncher.new(@url)
       launcher.launch
